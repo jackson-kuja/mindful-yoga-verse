@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import type { Session, Pose } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
@@ -130,38 +129,50 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                 </div>
             )}
 
-            {/* Unified and animated pose image container */}
-            {imageToDisplay && (
-                <div className={cn(
-                    "absolute rounded-lg overflow-hidden shadow-2xl bg-black/30 backdrop-blur-sm pointer-events-auto z-30",
-                    !isResting ? "transition-all duration-700 ease-in-out" : "",
+            {/* Current Pose Preview (Top-Left) */}
+            {!isResting && currentPose && (
+                <div className="absolute top-4 left-4 w-48 lg:w-64 rounded-lg overflow-hidden shadow-2xl bg-black/30 backdrop-blur-sm pointer-events-auto z-30 animate-fade-in">
+                    <div className="relative w-full aspect-[512/341]">
+                        <img src={currentPose.image} alt={currentPose.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="p-2 space-y-1">
+                        <Progress value={isFinished ? 100 : poseProgress} className="h-1 bg-white/30 [&>div]:bg-white" />
+                        <div className="text-xs text-right text-neutral-300 font-mono">
+                            {isFinished ? 'Done' : `${remainingPoseSeconds} ${remainingPoseSeconds === 1 ? 'second' : 'seconds'} left`}
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {/* Next Pose Preview (Animated) */}
+            {nextPose && (
+                 <div className={cn(
+                    "absolute rounded-lg overflow-hidden shadow-2xl bg-black/30 backdrop-blur-sm pointer-events-auto z-30 transition-all duration-700 ease-in-out",
                     isResting 
                         ? "w-[512px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-                        : "w-48 lg:w-64 top-4 left-4"
+                        : "w-48 bottom-24 right-4 animate-slide-in-right"
                 )}>
                     <div className={cn(
                         "relative w-full",
                         isResting ? "h-[341px]" : "aspect-[512/341]"
                     )}>
-                        <img src={imageToDisplay} alt={nameToDisplay} className="w-full h-full object-cover" />
+                        <img src={nextPose.image} alt={nextPose.name} className="w-full h-full object-cover" />
                         
-                        {isResting && currentItem.type === 'rest' && (
+                        {isResting && currentItem && 'type' in currentItem && currentItem.type === 'rest' && (
                              <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg">
                                 <span className="text-9xl font-bold text-yellow-400 drop-shadow-lg">
                                     {Math.ceil(currentItem.duration - timeInCurrentItem)}
                                 </span>
                             </div>
                         )}
-                    </div>
-                    
-                    {!isResting && currentPose && (
-                        <div className="p-2 space-y-1">
-                            <Progress value={isFinished ? 100 : poseProgress} className="h-1 bg-white/30 [&>div]:bg-white" />
-                            <div className="text-xs text-right text-neutral-300 font-mono">
-                                {isFinished ? 'Done' : `${remainingPoseSeconds} ${remainingPoseSeconds === 1 ? 'second' : 'seconds'} left`}
+
+                        {!isResting && (
+                            <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/50 text-left">
+                                <span className="text-xs text-neutral-300">Next up</span>
+                                <p className="text-sm font-medium truncate text-white">{nextPose.name}</p>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             )}
             
@@ -198,15 +209,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
 
                             {/* Right: Next Pose Preview */}
                             <div className="w-1/3 text-right overflow-hidden">
-                                {nextPose && !isResting && (
-                                    <div className="flex items-center justify-end gap-2 animate-slide-in-right">
-                                        <div className="text-right">
-                                            <span className="text-xs text-neutral-400">Next up</span>
-                                            <p className="text-sm font-medium truncate">{nextPose.name}</p>
-                                        </div>
-                                        <img src={nextPose.image} alt={nextPose.name} className="w-16 h-10 object-cover rounded-md" />
-                                    </div>
-                                )}
+                                { /* This space is kept for layout balance */ }
                             </div>
                         </div>
 

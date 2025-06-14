@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+
+import { useState, useEffect, useMemo, useRef } from 'react';
 import type { Session, Pose } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -23,6 +24,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const program = session.program || [];
     const [showResults, setShowResults] = useState(false);
     const [resultsData, setResultsData] = useState<{elapsedTime: number, posesCompleted: number} | null>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const programWithRests = useMemo<(Pose | { type: 'rest', duration: number })[]>(() => {
         const result: (Pose | { type: 'rest', duration: number })[] = [];
@@ -41,6 +43,32 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const [isPlaying, setIsPlaying] = useState(true);
 
     const isFinished = useMemo(() => totalDuration > 0 && elapsedTime >= totalDuration, [elapsedTime, totalDuration]);
+
+    useEffect(() => {
+        const audio = new Audio('/lovable-uploads/yoga-background-music-164337.mp3');
+        audio.loop = true;
+        audio.volume = 0.3;
+        audioRef.current = audio;
+
+        return () => {
+            audio.pause();
+            audioRef.current = null;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (isFinished) {
+            audioRef.current?.pause();
+            return;
+        }
+
+        if (isPlaying) {
+            // Browsers may block autoplay, so we catch potential errors
+            audioRef.current?.play().catch(e => console.error("Audio playback error:", e));
+        } else {
+            audioRef.current?.pause();
+        }
+    }, [isPlaying, isFinished]);
 
     useEffect(() => {
         if (!isPlaying || isFinished) {

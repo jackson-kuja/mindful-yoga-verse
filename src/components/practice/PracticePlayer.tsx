@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo } from 'react';
 import type { Session, Pose } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
@@ -117,14 +118,18 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                     <div className="text-center animate-fade-in">
                         <p className="text-lg text-neutral-300 mb-2">Get Ready For</p>
                         <h3 className="text-4xl font-bold mb-4">{nextPose.name}</h3>
-                        <img 
-                            src={nextPose.image} 
-                            alt={nextPose.name} 
-                            className="w-96 h-64 object-cover rounded-lg mx-auto mb-4 shadow-lg"
-                        />
-                        <span className="text-9xl font-bold text-yellow-400">
-                            {Math.ceil(currentItem.duration - timeInCurrentItem)}
-                        </span>
+                        <div className="relative w-[512px] h-[341px] mx-auto">
+                            <img 
+                                src={nextPose.image} 
+                                alt={nextPose.name} 
+                                className="w-full h-full object-cover rounded-lg shadow-lg"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg">
+                                <span className="text-9xl font-bold text-yellow-400 drop-shadow-lg">
+                                    {Math.ceil(currentItem.duration - timeInCurrentItem)}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
@@ -180,7 +185,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
 
                 {/* TOP-RIGHT: Finish Button */}
                 <div className="absolute top-4 right-4 pointer-events-auto">
-                    <Button onClick={handleFinish} variant="ghost" className="rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm">
+                    <Button onClick={handleFinish} variant="ghost" className="rounded-full bg-black/30 hover:bg-destructive hover:text-destructive-foreground backdrop-blur-sm">
                         End Session
                         <X />
                     </Button>

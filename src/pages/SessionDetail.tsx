@@ -52,7 +52,7 @@ const SessionDetail = () => {
                 aria-label="Play video"
                 onClick={handleStartPractice}
               >
-                <Play className="w-12 h-12 text-white fill-white" />
+                <Play className="w-16 h-16 text-white fill-white" />
               </Button>
             </div>
           </div>

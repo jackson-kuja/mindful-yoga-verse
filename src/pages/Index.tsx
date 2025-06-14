@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { sessions } from "@/data/sessions";
 import type { Session } from "@/data/sessions";
 import SessionCard from "@/components/SessionCard";
-import Quiz from "@/components/quiz/Quiz";
 
 const Index = () => {
   const groupedSessions = sessions.reduce((acc, session) => {
@@ -35,10 +34,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-      
-      <div className="border-b" />
-
-      <Quiz />
       
       <div className="border-b" />
 

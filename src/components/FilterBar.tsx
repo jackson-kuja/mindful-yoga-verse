@@ -2,9 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Session } from "@/data/sessions";
+import { sessions } from "@/data/sessions";
 
 // Get unique values from sessions data
-const categories = ['All', ...Array.from(new Set(Object.values(window.APP_DATA.sessions).map(s => s.category)))];
+const categories = ['All', ...Array.from(new Set(sessions.map(s => s.category)))];
 const levels = ['All', 'Beginner', 'Intermediate', 'Advanced', 'All-Levels'];
 const durations = [
     { label: "All", value: "all" },

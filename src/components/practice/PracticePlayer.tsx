@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo } from 'react';
 import type { Session, Pose } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
@@ -119,7 +120,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                         <img 
                             src={nextPose.image} 
                             alt={nextPose.name} 
-                            className="w-40 h-40 object-cover rounded-lg mx-auto mb-4 shadow-lg"
+                            className="w-72 h-48 object-cover rounded-lg mx-auto mb-4 shadow-lg"
                         />
                         <span className="text-9xl font-bold text-yellow-400">
                             {Math.ceil(currentItem.duration - timeInCurrentItem)}
@@ -135,7 +136,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                         <div className="w-48 lg:w-64 rounded-lg overflow-hidden shadow-2xl bg-black/30 backdrop-blur-sm pointer-events-auto">
                             <img src={currentPose.image} alt={currentPose.name} className="w-full h-auto object-cover" />
                              <div className="p-2 space-y-1">
-                                <Progress value={isFinished ? 100 : poseProgress} className="h-1 bg-white/30 [&>div]:bg-white" />
+                                <Progress value={isFinished ? 0 : 100 - poseProgress} className="h-1 bg-white/30 [&>div]:bg-white" />
                                 <div className="text-xs text-right text-neutral-300 font-mono">
                                     {isFinished ? 'Done' : `${remainingPoseSeconds} ${remainingPoseSeconds === 1 ? 'second' : 'seconds'} left`}
                                 </div>

@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo } from 'react';
 import type { Session, Pose } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
@@ -78,6 +79,8 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
 
     const isResting = currentItem && !('name' in currentItem);
     const currentPose = currentItem && 'name' in currentItem ? currentItem : null;
+    const totalPoses = program.length;
+    const currentPoseNumber = currentPose ? program.findIndex(p => p.name === currentPose.name) + 1 : 0;
 
     const poseProgress = currentPose ? (timeInCurrentItem / currentPose.duration) * 100 : 0;
     const totalProgress = totalDuration > 0 ? (elapsedTime / totalDuration) * 100 : 0;
@@ -173,7 +176,9 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                                 {currentPose && (
                                     <div className="animate-fade-in">
                                         <h2 className="text-xl font-bold truncate">{currentPose.name}</h2>
-                                        <p className="text-sm text-neutral-300 truncate">{currentPose.cue}</p>
+                                        <p className="text-sm text-neutral-300 truncate">
+                                            Pose {currentPoseNumber} of {totalPoses}
+                                        </p>
                                     </div>
                                 )}
                             </div>

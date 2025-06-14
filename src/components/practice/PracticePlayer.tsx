@@ -192,9 +192,9 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                             </div>
 
                             {/* Right: Next Pose Preview */}
-                            <div className="w-1/3 text-right">
+                            <div className="w-1/3 text-right overflow-hidden">
                                 {nextPose && !isResting && (
-                                    <div className="flex items-center justify-end gap-2 animate-fade-in">
+                                    <div className="flex items-center justify-end gap-2 animate-slide-in-right">
                                         <div className="text-right">
                                             <span className="text-xs text-neutral-400">Next up</span>
                                             <p className="text-sm font-medium truncate">{nextPose.name}</p>

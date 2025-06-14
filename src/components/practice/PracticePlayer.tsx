@@ -1,14 +1,13 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import type { Session } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { CircularProgress } from '@/components/ui/circular-progress';
-import { Play, Pause, SkipForward, RotateCcw } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Play, Pause, SkipForward, RotateCcw, X } from 'lucide-react';
 
 interface PracticePlayerProps {
   session: Session;
+  onFinish?: () => void;
 }
 
 const formatTime = (seconds: number) => {
@@ -17,7 +16,7 @@ const formatTime = (seconds: number) => {
   return `${mins}:${secs}`;
 }
 
-const PracticePlayer = ({ session }: PracticePlayerProps) => {
+const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const program = session.program || [];
     const totalDuration = useMemo(() => program.reduce((sum, pose) => sum + pose.duration, 0), [program]);
 
@@ -77,55 +76,72 @@ const PracticePlayer = ({ session }: PracticePlayerProps) => {
         setElapsedTime(cumulativeTime);
     };
 
-    if (program.length === 0) return <div className="p-4">This session has no program.</div>;
+    const handleFinish = () => {
+        setIsPlaying(false);
+        onFinish?.();
+    }
+
+    if (program.length === 0) return null;
 
     return (
-        <div className="flex flex-col lg:flex-row h-full w-full bg-background text-foreground">
-            <div className="lg:w-2/3 h-[50vh] lg:h-full bg-black flex items-center justify-center relative">
-                <img src={currentPose.image} alt={currentPose.name} className="max-w-full max-h-full object-contain animate-fade-in" />
-                <div className="absolute bottom-4 left-4 right-4 bg-black/50 p-2 rounded-lg backdrop-blur-sm">
-                    <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium text-white">{formatTime(elapsedTime)}</span>
-                        <span className="text-sm font-medium text-white">{formatTime(totalDuration)}</span>
-                    </div>
-                    <Progress value={totalProgress} className="h-2" />
+        <div className="relative w-full h-full text-white pointer-events-none">
+            {/* TOP-LEFT: Picture-in-Picture & Pose Timer */}
+            <div className="absolute top-4 left-4 flex items-start gap-4">
+                <div className="w-48 lg:w-64 rounded-lg overflow-hidden shadow-2xl bg-black/30 backdrop-blur-sm pointer-events-auto">
+                    <img src={currentPose.image} alt={currentPose.name} className="w-full h-auto object-cover animate-fade-in" />
+                </div>
+                <div className="hidden sm:block">
+                     <CircularProgress value={isFinished ? 100 : poseProgress} size={100} strokeWidth={8}>
+                        <div className="text-2xl font-bold">
+                            {isFinished ? 'Done' : formatTime(currentPose.duration - timeInCurrentPose)}
+                        </div>
+                    </CircularProgress>
                 </div>
             </div>
 
-            <div className="lg:w-1/3 h-[50vh] lg:h-full flex flex-col p-6 overflow-y-auto">
-                <div className="flex-grow flex flex-col items-center justify-center text-center">
-                    <CircularProgress value={isFinished ? 100 : poseProgress} size={200} strokeWidth={10} className="mb-6">
-                        <div className="text-4xl font-bold">
-                            {isFinished ? 'Done!' : formatTime(currentPose.duration - timeInCurrentPose)}
-                        </div>
-                    </CircularProgress>
+            {/* BOTTOM: Info, Controls, Progress */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+                 <div className="max-w-3xl mx-auto flex flex-col items-center text-center gap-4">
+                    <div>
+                        <h2 className="text-3xl font-bold mb-1 animate-fade-in">{currentPose.name}</h2>
+                        <p className="text-neutral-300 animate-fade-in">{currentPose.cue}</p>
+                    </div>
 
-                    <h2 className="text-3xl font-bold mb-2">{currentPose.name}</h2>
-                    <p className="text-muted-foreground mb-8">{currentPose.cue}</p>
-                </div>
-
-                <div className="flex-shrink-0">
                     {nextPose && !isFinished && (
-                        <Card className="mb-6 bg-secondary/50 animate-fade-in">
-                            <CardContent className="p-4">
-                                <p className="text-sm text-muted-foreground mb-1">Up Next</p>
-                                <p className="font-semibold">{nextPose.name}</p>
-                            </CardContent>
-                        </Card>
+                        <div className="bg-white/10 rounded-lg px-3 py-1 text-sm backdrop-blur-sm animate-fade-in">
+                            <span className="text-neutral-400">Up Next: </span>
+                            <span className="font-semibold">{nextPose.name}</span>
+                        </div>
                     )}
 
-                    <div className="flex items-center justify-center gap-4">
-                        <Button variant="ghost" size="icon" className="w-16 h-16" onClick={handleReset} aria-label="Reset Practice">
-                            <RotateCcw className="w-8 h-8" />
+                    <div className="flex items-center justify-center gap-4 pointer-events-auto">
+                        <Button variant="ghost" size="icon" className="w-14 h-14 text-white hover:bg-white/20" onClick={handleReset} aria-label="Reset Practice">
+                            <RotateCcw className="w-7 h-7" />
                         </Button>
-                        <Button size="icon" className="w-24 h-24 rounded-full" onClick={handlePlayPause} disabled={isFinished} aria-label={isPlaying ? "Pause" : "Play"}>
-                            {isPlaying ? <Pause className="w-12 h-12 fill-current" /> : <Play className="w-12 h-12 fill-current ml-1" />}
+                        <Button size="icon" className="w-20 h-20 rounded-full bg-white text-black hover:bg-neutral-200" onClick={handlePlayPause} disabled={isFinished} aria-label={isPlaying ? "Pause" : "Play"}>
+                            {isPlaying ? <Pause className="w-10 h-10 fill-current" /> : <Play className="w-10 h-10 fill-current ml-1" />}
                         </Button>
-                        <Button variant="ghost" size="icon" className="w-16 h-16" onClick={handleSkip} disabled={!nextPose || isFinished} aria-label="Skip to Next Pose">
-                            <SkipForward className="w-8 h-8" />
+                        <Button variant="ghost" size="icon" className="w-14 h-14 text-white hover:bg-white/20" onClick={handleSkip} disabled={!nextPose || isFinished} aria-label="Skip to Next Pose">
+                            <SkipForward className="w-7 h-7" />
                         </Button>
                     </div>
-                </div>
+
+                    <div className="w-full mt-2">
+                        <div className="flex items-center justify-between mb-1 text-xs">
+                            <span>{formatTime(elapsedTime)}</span>
+                            <span>{formatTime(totalDuration)}</span>
+                        </div>
+                        <Progress value={totalProgress} className="h-1 bg-white/20 [&>div]:bg-white" />
+                    </div>
+                 </div>
+            </div>
+
+            {/* TOP-RIGHT: Finish Button */}
+            <div className="absolute top-4 right-4 pointer-events-auto">
+                <Button onClick={handleFinish} variant="ghost" size="icon" className="rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm">
+                    <X className="w-6 h-6" />
+                    <span className="sr-only">Finish Session</span>
+                </Button>
             </div>
         </div>
     );

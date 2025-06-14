@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import type { Session, Pose } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
@@ -84,6 +83,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const totalProgress = totalDuration > 0 ? (elapsedTime / totalDuration) * 100 : 0;
     const isFinished = elapsedTime >= totalDuration;
     const remainingPoseSeconds = currentPose ? Math.max(0, Math.round(currentPose.duration - timeInCurrentItem)) : 0;
+    const remainingTotalSeconds = totalDuration > 0 ? Math.max(0, totalDuration - elapsedTime) : 0;
 
     const handlePlayPause = () => setIsPlaying(!isPlaying);
     const handleReset = () => {
@@ -136,7 +136,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                         <div className="w-48 lg:w-64 rounded-lg overflow-hidden shadow-2xl bg-black/30 backdrop-blur-sm pointer-events-auto">
                             <img src={currentPose.image} alt={currentPose.name} className="w-full h-auto object-cover" />
                              <div className="p-2 space-y-1">
-                                <Progress value={isFinished ? 0 : 100 - poseProgress} className="h-1 bg-white/30 [&>div]:bg-white" />
+                                <Progress value={isFinished ? 0 : 100 - poseProgress} dir="rtl" className="h-1 bg-white/30 [&>div]:bg-white" />
                                 <div className="text-xs text-right text-neutral-300 font-mono">
                                     {isFinished ? 'Done' : `${remainingPoseSeconds} ${remainingPoseSeconds === 1 ? 'second' : 'seconds'} left`}
                                 </div>
@@ -178,9 +178,9 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                         <div className="w-full mt-2">
                             <div className="flex items-center justify-between mb-1 text-xs">
                                 <span>{formatTime(elapsedTime)}</span>
-                                <span>{formatTime(totalDuration)}</span>
+                                <span>-{formatTime(remainingTotalSeconds)}</span>
                             </div>
-                            <Progress value={totalProgress} className="h-1 bg-white/20 [&>div]:bg-white" />
+                            <Progress value={100 - totalProgress} dir="rtl" className="h-1 bg-white/20 [&>div]:bg-white" />
                         </div>
                      </div>
                 </div>

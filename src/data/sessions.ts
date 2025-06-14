@@ -1,4 +1,3 @@
-
 export interface Session {
   id: string; // Using slug as the unique ID
   name: string;
@@ -22,7 +21,7 @@ export const sessions: Session[] = [
     "length": 20,
     "tags": ["vinyasa", "morning", "full-body"],
     "instructor": "Ava Patel",
-    "thumbnail": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=800&auto=format&fit=crop"
+    "thumbnail": "/lovable-uploads/e6441b44-9f3c-4885-bbdc-10812ac30a0f.png"
   },
   {
     "id": "core-stability-pilates",
@@ -33,7 +32,7 @@ export const sessions: Session[] = [
     "length": 30,
     "tags": ["pilates", "core", "stability"],
     "instructor": "Diego Ramos",
-    "thumbnail": "https://images.unsplash.com/photo-1599447512188-3c7556a31d96?q=80&w=800&auto=format&fit=crop"
+    "thumbnail": "/lovable-uploads/3973e1c6-f0b9-4359-b326-819f2e428271.png"
   },
   {
     "id": "lunchtime-chair-stretch",
@@ -66,7 +65,7 @@ export const sessions: Session[] = [
     "length": 40,
     "tags": ["power", "cardio", "balance"],
     "instructor": "Sofia Hernández",
-    "thumbnail": "https://images.unsplash.com/photo-1575052814080-384180a3e351?q=80&w=800&auto=format&fit=crop"
+    "thumbnail": "/lovable-uploads/2cc38afc-3eb4-40b2-a5a6-79ad0e96817a.png"
   },
   {
     "id": "mid-afternoon-micro-meditation",
@@ -99,7 +98,7 @@ export const sessions: Session[] = [
     "length": 30,
     "tags": ["restorative", "props", "sleep-prep"],
     "instructor": "Noah Kim",
-    "thumbnail": "https://images.unsplash.com/photo-1552196563-55cd4e45efb3?q=80&w=800&auto=format&fit=crop"
+    "thumbnail": "/lovable-uploads/79b5a332-dc59-480b-9a85-b247e1aafa54.png"
   },
   {
     "id": "45min-total-body-challenge",
@@ -110,7 +109,7 @@ export const sessions: Session[] = [
     "length": 45,
     "tags": ["total-body", "power", "endurance"],
     "instructor": "Chloe Zhang",
-    "thumbnail": "https://images.unsplash.com/photo-1603988363607-962456432328?q=80&w=800&auto=format&fit=crop"
+    "thumbnail": "/lovable-uploads/49a70081-4e66-4014-a2ec-90fbb6baa5da.png"
   },
   {
     "id": "bedtime-breath-to-sleep",
@@ -121,7 +120,7 @@ export const sessions: Session[] = [
     "length": 12,
     "tags": ["pranayama", "sleep", "calm"],
     "instructor": "Ethan Johnson",
-    "thumbnail": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop"
+    "thumbnail": "/lovable-uploads/5e8e80fa-8eff-4b16-a89f-53339e6993aa.png"
   }
 ];
 

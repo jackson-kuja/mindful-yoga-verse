@@ -41,7 +41,7 @@ const SessionDetail = () => {
       </div>
       <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
         <div className="md:col-span-2">
-          <div className="aspect-video bg-secondary rounded-lg flex items-center justify-center mb-6 relative overflow-hidden">
+          <div className="aspect-[3/2] bg-secondary rounded-lg flex items-center justify-center mb-6 relative overflow-hidden">
             {/* TODO: Implement actual video player */}
             <img src={session.thumbnail} alt={session.name} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/20 flex items-center justify-center">

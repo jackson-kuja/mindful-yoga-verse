@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import type { Session, Pose } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
@@ -164,36 +163,55 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
             )}
             
             <div className={cn("transition-opacity duration-500", isResting ? 'opacity-20' : 'opacity-100')}>
-                {/* BOTTOM: Info, Controls, Progress */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
-                     <div className="max-w-3xl mx-auto flex flex-col items-center text-center gap-4">
-                        {currentPose && (
-                            <div>
-                                <h2 className="text-3xl font-bold mb-1">{currentPose.name}</h2>
-                                <p className="text-neutral-300">{currentPose.cue}</p>
-                            </div>
-                        )}
-
-                        <div className="flex items-center justify-center gap-4 pointer-events-auto">
-                            <Button variant="ghost" size="icon" className="w-14 h-14 text-white hover:bg-white/20" onClick={handleReset} aria-label="Reset Practice">
-                                <RotateCcw className="w-7 h-7" />
-                            </Button>
-                            <Button size="icon" className="w-20 h-20 rounded-full bg-white text-black hover:bg-neutral-200" onClick={handlePlayPause} disabled={isFinished} aria-label={isPlaying ? "Pause" : "Play"}>
-                                {isPlaying ? <Pause className="w-10 h-10 fill-current" /> : <Play className="w-10 h-10 fill-current ml-1" />}
-                            </Button>
-                            <Button variant="ghost" size="icon" className="w-14 h-14 text-white hover:bg-white/20" onClick={handleSkip} disabled={!nextPose || isFinished} aria-label="Skip to Next Pose">
-                                <SkipForward className="w-7 h-7" />
-                            </Button>
+                {/* BOTTOM: Player Controls */}
+                <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm pointer-events-auto">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+                        {/* Timeline */}
+                        <div className="flex items-center gap-3 w-full">
+                            <span className="text-xs font-mono text-neutral-400">{formatTime(elapsedTime)}</span>
+                            <Progress value={totalProgress} className="h-1.5 w-full bg-white/20 [&>div]:bg-white" />
+                            <span className="text-xs font-mono text-neutral-400">-{formatTime(remainingTotalSeconds)}</span>
                         </div>
 
-                        <div className="w-full mt-2">
-                            <div className="flex items-center justify-between mb-1 text-xs">
-                                <span>{formatTime(elapsedTime)}</span>
-                                <span>-{formatTime(remainingTotalSeconds)}</span>
+                        {/* Controls & Info */}
+                        <div className="flex items-center justify-between mt-2">
+                            {/* Left: Pose Info */}
+                            <div className="w-1/3 text-left">
+                                {currentPose && (
+                                    <div className="animate-fade-in">
+                                        <h2 className="text-base font-bold truncate">{currentPose.name}</h2>
+                                        <p className="text-xs text-neutral-300 truncate">{currentPose.cue}</p>
+                                    </div>
+                                )}
                             </div>
-                            <Progress value={totalProgress} className="h-1 bg-white/20 [&>div]:bg-white" />
+
+                            {/* Center: Controls */}
+                            <div className="flex-shrink-0 flex items-center justify-center gap-2">
+                                <Button variant="ghost" size="icon" className="w-12 h-12 text-white hover:bg-white/20" onClick={handleReset} aria-label="Reset Practice">
+                                    <RotateCcw className="w-6 h-6" />
+                                </Button>
+                                <Button size="icon" className="w-16 h-16 rounded-full bg-white text-black hover:bg-neutral-200 shadow-lg" onClick={handlePlayPause} disabled={isFinished} aria-label={isPlaying ? "Pause" : "Play"}>
+                                    {isPlaying ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
+                                </Button>
+                                <Button variant="ghost" size="icon" className="w-12 h-12 text-white hover:bg-white/20" onClick={handleSkip} disabled={!nextPose || isFinished} aria-label="Skip to Next Pose">
+                                    <SkipForward className="w-6 h-6" />
+                                </Button>
+                            </div>
+
+                            {/* Right: Next Pose Preview */}
+                            <div className="w-1/3 text-right">
+                                {nextPose && !isResting && (
+                                    <div className="flex items-center justify-end gap-2 animate-fade-in">
+                                        <div className="text-right">
+                                            <span className="text-xs text-neutral-400">Next up</span>
+                                            <p className="text-sm font-medium truncate">{nextPose.name}</p>
+                                        </div>
+                                        <img src={nextPose.image} alt={nextPose.name} className="w-16 h-10 object-cover rounded-md" />
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                     </div>
+                    </div>
                 </div>
 
                 {/* TOP-RIGHT: Finish Button */}

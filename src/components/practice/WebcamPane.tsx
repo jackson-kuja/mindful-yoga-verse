@@ -1,7 +1,6 @@
 
 import { useNavigate } from 'react-router-dom';
 import { useWebcam } from '@/hooks/useWebcam';
-import { useProgress } from '@/hooks/useProgress';
 import { Button } from '@/components/ui/button';
 import { CameraOff } from 'lucide-react';
 import type { Session } from '@/data/sessions';
@@ -13,14 +12,12 @@ interface WebcamPaneProps {
 const WebcamPane = ({ session }: WebcamPaneProps) => {
   const navigate = useNavigate();
   const { videoRef, error } = useWebcam();
-  const { setProgress } = useProgress();
 
   const handleFinishSession = () => {
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
       stream.getTracks().forEach(track => track.stop());
     }
-    setProgress(session.id, 100);
     navigate(`/sessions/${session.id}`);
   };
 
@@ -46,7 +43,7 @@ const WebcamPane = ({ session }: WebcamPaneProps) => {
       </div>
       <Button 
         onClick={handleFinishSession}
-        aria-label="Finish session and mark as complete"
+        aria-label="Finish session"
         size="lg"
       >
         Finish Session

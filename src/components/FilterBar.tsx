@@ -28,7 +28,7 @@ interface FilterBarProps {
 const FilterBar = ({ filters, onFilterChange }: FilterBarProps) => {
   
   const handleValueChange = (type: keyof FilterState, value: string) => {
-    onFilterChange({ ...filters, [type]: value === 'All' ? 'all' : value });
+    onFilterChange({ ...filters, [type]: value });
   };
 
   const handleReset = () => {
@@ -45,7 +45,7 @@ const FilterBar = ({ filters, onFilterChange }: FilterBarProps) => {
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              {categories.map(c => <SelectItem key={c} value={c === 'All' ? 'all' : c}>{c}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={filters.duration} onValueChange={(value) => handleValueChange('duration', value)}>
@@ -61,7 +61,7 @@ const FilterBar = ({ filters, onFilterChange }: FilterBarProps) => {
               <SelectValue placeholder="Level" />
             </SelectTrigger>
             <SelectContent>
-              {levels.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+              {levels.map(l => <SelectItem key={l} value={l === 'All' ? 'all' : l}>{l}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>

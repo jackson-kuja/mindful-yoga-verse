@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { Session } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,8 @@ import { Award, Clock, Flame } from 'lucide-react';
 interface SessionResultsProps {
   session: Session;
   elapsedTime: number; // in seconds
+  posesCompleted: number;
+  totalPoses: number;
   onClose: () => void;
   open: boolean;
 }
@@ -23,19 +24,24 @@ const formatTime = (seconds: number) => {
   return `${secs}s`;
 };
 
-const SessionResults = ({ session, elapsedTime, onClose, open }: SessionResultsProps) => {
+const SessionResults = ({ session, elapsedTime, posesCompleted, totalPoses, onClose, open }: SessionResultsProps) => {
   const caloriesPerMinute = 25 / 10;
   const elapsedMinutes = elapsedTime / 60;
   const caloriesBurned = Math.round(elapsedMinutes * caloriesPerMinute);
-  const posesCompleted = session.program?.length || 0;
+  
+  const isCompleted = posesCompleted === totalPoses && totalPoses > 0;
+  const title = isCompleted ? "Session Complete!" : "Practice Stopped";
+  const description = isCompleted
+    ? `Great job completing your practice of ${session.name}.`
+    : "Great effort! Every pose is a step forward.";
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="sm:max-w-md pointer-events-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl text-center">Session Complete!</DialogTitle>
+          <DialogTitle className="text-2xl text-center">{title}</DialogTitle>
           <DialogDescription className="text-center">
-            Great job completing your practice of {session.name}.
+            {description}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -59,7 +65,7 @@ const SessionResults = ({ session, elapsedTime, onClose, open }: SessionResultsP
                     <Award className="w-6 h-6 text-yellow-500" />
                     <span className="font-medium">Poses Completed</span>
                 </div>
-                <span className="font-bold text-lg">{posesCompleted}</span>
+                <span className="font-bold text-lg">{posesCompleted} / {totalPoses}</span>
             </div>
           )}
         </div>

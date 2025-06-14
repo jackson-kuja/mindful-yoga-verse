@@ -22,6 +22,7 @@ const formatTime = (seconds: number) => {
 const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const program = session.program || [];
     const [showResults, setShowResults] = useState(false);
+    const [resultsData, setResultsData] = useState<{elapsedTime: number, posesCompleted: number} | null>(null);
 
     const programWithRests = useMemo<(Pose | { type: 'rest', duration: number })[]>(() => {
         const result: (Pose | { type: 'rest', duration: number })[] = [];
@@ -44,8 +45,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     useEffect(() => {
         if (!isPlaying || isFinished) {
             if (isFinished) {
-                setIsPlaying(false);
-                setShowResults(true);
+                handleFinish();
             }
             return;
         }
@@ -101,6 +101,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
         setElapsedTime(0);
         setIsPlaying(true);
         setShowResults(false);
+        setResultsData(null);
     };
     const handleSkip = () => {
         if (!nextPose) return;
@@ -115,7 +116,30 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     };
 
     const handleFinish = () => {
+        if (resultsData) return;
         setIsPlaying(false);
+
+        let posesDone = 0;
+        if (elapsedTime >= totalDuration && totalDuration > 0) {
+            posesDone = program.length;
+        } else {
+            let cumulativeTime = 0;
+            for (const item of programWithRests) {
+                cumulativeTime += item.duration;
+                if (elapsedTime >= cumulativeTime) {
+                    if ('name' in item) { // It's a pose
+                        posesDone++;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+        
+        setResultsData({
+            elapsedTime,
+            posesCompleted: posesDone
+        });
         setShowResults(true);
     }
 
@@ -238,12 +262,16 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                     </Button>
                 </div>
             </div>
-            <SessionResults
-                open={showResults}
-                onClose={handleCloseResults}
-                session={session}
-                elapsedTime={elapsedTime}
-            />
+            {resultsData && (
+                <SessionResults
+                    open={showResults}
+                    onClose={handleCloseResults}
+                    session={session}
+                    elapsedTime={resultsData.elapsedTime}
+                    posesCompleted={resultsData.posesCompleted}
+                    totalPoses={program.length}
+                />
+            )}
         </div>
     );
 }

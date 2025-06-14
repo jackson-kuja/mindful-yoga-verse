@@ -166,21 +166,14 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                 {/* BOTTOM: Player Controls */}
                 <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm pointer-events-auto">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-                        {/* Timeline */}
-                        <div className="flex items-center gap-3 w-full">
-                            <span className="text-xs font-mono text-neutral-400">{formatTime(elapsedTime)}</span>
-                            <Progress value={totalProgress} className="h-1.5 w-full bg-white/20 [&>div]:bg-white" />
-                            <span className="text-xs font-mono text-neutral-400">-{formatTime(remainingTotalSeconds)}</span>
-                        </div>
-
                         {/* Controls & Info */}
-                        <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center justify-between">
                             {/* Left: Pose Info */}
                             <div className="w-1/3 text-left">
                                 {currentPose && (
                                     <div className="animate-fade-in">
-                                        <h2 className="text-base font-bold truncate">{currentPose.name}</h2>
-                                        <p className="text-xs text-neutral-300 truncate">{currentPose.cue}</p>
+                                        <h2 className="text-xl font-bold truncate">{currentPose.name}</h2>
+                                        <p className="text-sm text-neutral-300 truncate">{currentPose.cue}</p>
                                     </div>
                                 )}
                             </div>
@@ -210,6 +203,13 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                                     </div>
                                 )}
                             </div>
+                        </div>
+
+                        {/* Timeline */}
+                        <div className="flex items-center gap-3 w-full mt-2">
+                            <span className="text-xs font-mono text-neutral-400">{formatTime(elapsedTime)}</span>
+                            <Progress value={totalProgress} className="h-1.5 w-full bg-white/20 [&>div]:bg-white" />
+                            <span className="text-xs font-mono text-neutral-400">-{formatTime(remainingTotalSeconds)}</span>
                         </div>
                     </div>
                 </div>

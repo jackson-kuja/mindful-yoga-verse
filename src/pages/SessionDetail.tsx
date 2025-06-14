@@ -1,11 +1,8 @@
 
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getSessionById } from '@/data/sessions';
-import { useProgress } from '@/hooks/useProgress';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Clock, BarChart3, Star, User, Play } from "lucide-react";
 import NotFound from './NotFound';
 
@@ -13,18 +10,11 @@ const SessionDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const session = id ? getSessionById(id) : undefined;
-  const { getProgress, setProgress } = useProgress();
 
   if (!session) {
     return <NotFound />;
   }
   
-  const progress = getProgress(session.id);
-
-  const handleProgressChange = (value: number[]) => {
-    setProgress(session.id, value[0]);
-  };
-
   const handleStartPractice = () => {
     navigate(`/practice/${session.id}`);
   };
@@ -58,25 +48,6 @@ const SessionDetail = () => {
           </div>
           <h1 className="text-4xl font-bold mb-2">{session.name}</h1>
           <p className="text-lg text-muted-foreground mb-6">{session.description}</p>
-          <Card>
-            <CardHeader>
-              <CardTitle>Track Your Progress</CardTitle>
-              <CardDescription>Use the slider to mark how much of the session you've completed.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <Label htmlFor="progress-slider" className="text-lg font-bold text-primary">{Math.round(progress)}%</Label>
-                <Slider
-                  id="progress-slider"
-                  defaultValue={[progress]}
-                  max={100}
-                  step={1}
-                  onValueCommit={handleProgressChange}
-                  aria-label="Session completion progress"
-                />
-              </div>
-            </CardContent>
-          </Card>
         </div>
         <div className="md:col-span-1">
           <Card>

@@ -3,17 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Session } from "@/data/sessions";
-import ProgressRing from "./ProgressRing";
 import { Clock, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface SessionCardProps {
   session: Session;
-  showProgress?: boolean;
-  progress?: number;
 }
 
-const SessionCard = ({ session, showProgress = false, progress = 0 }: SessionCardProps) => {
+const SessionCard = ({ session }: SessionCardProps) => {
   const navigate = useNavigate();
 
   const handleStartPractice = (e: React.MouseEvent) => {
@@ -28,11 +25,6 @@ const SessionCard = ({ session, showProgress = false, progress = 0 }: SessionCar
         <div className="relative aspect-[3/2] bg-secondary">
           {/* TODO: Replace with actual session thumbnail image */}
           <img src={session.thumbnail} alt={session.name} className="w-full h-full object-cover" />
-          {showProgress && (
-            <div className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm rounded-full">
-              <ProgressRing progress={progress} />
-            </div>
-          )}
         </div>
         <CardHeader className="flex-grow">
           <CardTitle className="text-xl">{session.name}</CardTitle>

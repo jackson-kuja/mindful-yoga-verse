@@ -3,13 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { sessions } from "@/data/sessions";
 import type { Session } from "@/data/sessions";
-import { useProgress } from "@/hooks/useProgress";
 import SessionCard from "@/components/SessionCard";
 import Quiz from "@/components/quiz/Quiz";
 
 const Index = () => {
-  const { progress } = useProgress();
-  
   const groupedSessions = sessions.reduce((acc, session) => {
     (acc[session.category] = acc[session.category] || []).push(session);
     return acc;
@@ -56,8 +53,6 @@ const Index = () => {
                     <SessionCard 
                       key={session.id} 
                       session={session} 
-                      showProgress 
-                      progress={progress[session.id] || 0}
                     />
                   ))}
                 </div>

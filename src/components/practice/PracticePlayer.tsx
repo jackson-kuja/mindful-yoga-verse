@@ -1,10 +1,10 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import type { Session, Pose } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Play, Pause, SkipForward, RotateCcw, X } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import SessionResults from './SessionResults';
 
 interface PracticePlayerProps {
   session: Session;
@@ -21,6 +21,7 @@ const formatTime = (seconds: number) => {
 
 const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const program = session.program || [];
+    const [showResults, setShowResults] = useState(false);
 
     const programWithRests = useMemo<(Pose | { type: 'rest', duration: number })[]>(() => {
         const result: (Pose | { type: 'rest', duration: number })[] = [];
@@ -38,9 +39,14 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const [elapsedTime, setElapsedTime] = useState(0);
     const [isPlaying, setIsPlaying] = useState(true);
 
+    const isFinished = useMemo(() => totalDuration > 0 && elapsedTime >= totalDuration, [elapsedTime, totalDuration]);
+
     useEffect(() => {
-        if (!isPlaying || elapsedTime >= totalDuration) {
-            if (elapsedTime >= totalDuration) setIsPlaying(false);
+        if (!isPlaying || isFinished) {
+            if (isFinished) {
+                setIsPlaying(false);
+                setShowResults(true);
+            }
             return;
         }
 
@@ -49,7 +55,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [isPlaying, elapsedTime, totalDuration]);
+    }, [isPlaying, elapsedTime, totalDuration, isFinished]);
 
     const { currentItem, nextPose, timeInCurrentItem } = useMemo(() => {
         let cumulativeTime = 0;
@@ -84,7 +90,6 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
 
     const poseProgress = currentPose ? (timeInCurrentItem / currentPose.duration) * 100 : 0;
     const totalProgress = totalDuration > 0 ? (elapsedTime / totalDuration) * 100 : 0;
-    const isFinished = elapsedTime >= totalDuration;
     const remainingPoseSeconds = currentPose ? Math.max(0, Math.round(currentPose.duration - timeInCurrentItem)) : 0;
     const remainingTotalSeconds = totalDuration > 0 ? Math.max(0, totalDuration - elapsedTime) : 0;
 
@@ -95,6 +100,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const handleReset = () => {
         setElapsedTime(0);
         setIsPlaying(true);
+        setShowResults(false);
     };
     const handleSkip = () => {
         if (!nextPose) return;
@@ -110,6 +116,11 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
 
     const handleFinish = () => {
         setIsPlaying(false);
+        setShowResults(true);
+    }
+
+    const handleCloseResults = () => {
+        setShowResults(false);
         onFinish?.();
     }
 
@@ -227,6 +238,12 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                     </Button>
                 </div>
             </div>
+            <SessionResults
+                open={showResults}
+                onClose={handleCloseResults}
+                session={session}
+                elapsedTime={elapsedTime}
+            />
         </div>
     );
 }

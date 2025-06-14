@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo } from 'react';
 import type { Session, Pose } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
@@ -129,32 +130,20 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                 </div>
             )}
 
-            {/* Active Pose Preview (Top-Left) */}
-            {!isResting && currentPose && (
-                 <div className="absolute w-48 lg:w-64 top-4 left-4 rounded-lg overflow-hidden shadow-2xl bg-black/30 backdrop-blur-sm pointer-events-auto z-30 animate-fade-in">
-                    <div className="relative w-full aspect-[512/341]">
-                        <img src={currentPose.image} alt={currentPose.name} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="p-2 space-y-1">
-                        <Progress value={isFinished ? 100 : poseProgress} className="h-1 bg-white/30 [&>div]:bg-white" />
-                        <div className="text-xs text-right text-neutral-300 font-mono">
-                            {isFinished ? 'Done' : `${remainingPoseSeconds} ${remainingPoseSeconds === 1 ? 'second' : 'seconds'} left`}
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Animated Rest Preview */}
-            {nextPose && (
+            {/* Unified and animated pose image container */}
+            {imageToDisplay && (
                 <div className={cn(
                     "absolute rounded-lg overflow-hidden shadow-2xl bg-black/30 backdrop-blur-sm pointer-events-auto z-30",
-                    "transition-all duration-700 ease-in-out",
+                    !isResting ? "transition-all duration-700 ease-in-out" : "",
                     isResting 
-                        ? "w-[512px] h-[341px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-100"
-                        : "w-16 h-10 top-full left-full opacity-0" // Start position is off-screen at bottom-right
+                        ? "w-[512px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                        : "w-48 lg:w-64 top-4 left-4"
                 )}>
-                    <div className="relative w-full h-full">
-                        <img src={nextPose.image} alt={nextPose.name} className="w-full h-full object-cover" />
+                    <div className={cn(
+                        "relative w-full",
+                        isResting ? "h-[341px]" : "aspect-[512/341]"
+                    )}>
+                        <img src={imageToDisplay} alt={nameToDisplay} className="w-full h-full object-cover" />
                         
                         {isResting && currentItem.type === 'rest' && (
                              <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg">
@@ -164,6 +153,15 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                             </div>
                         )}
                     </div>
+                    
+                    {!isResting && currentPose && (
+                        <div className="p-2 space-y-1">
+                            <Progress value={isFinished ? 100 : poseProgress} className="h-1 bg-white/30 [&>div]:bg-white" />
+                            <div className="text-xs text-right text-neutral-300 font-mono">
+                                {isFinished ? 'Done' : `${remainingPoseSeconds} ${remainingPoseSeconds === 1 ? 'second' : 'seconds'} left`}
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
             

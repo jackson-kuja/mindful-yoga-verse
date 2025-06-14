@@ -116,11 +116,14 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
 
     return (
         <div className="relative w-full h-full text-white pointer-events-none">
+            {isResting && (
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-20 pointer-events-auto" />
+            )}
             {isResting && nextPose && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm z-20 pointer-events-auto">
-                    <div className="text-center animate-fade-in -mt-48"> {/* Pushed up to make space for the image */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none">
+                    <div className="text-center animate-fade-in" style={{ transform: 'translateY(-16rem)' }}>
                         <p className="text-lg text-neutral-300 mb-2">Get Ready For</p>
-                        <h3 className="text-4xl font-bold mb-4">{nextPose.name}</h3>
+                        <h3 className="text-4xl font-bold mb-4 drop-shadow-lg">{nextPose.name}</h3>
                     </div>
                 </div>
             )}
@@ -128,9 +131,10 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
             {/* Unified and animated pose image container */}
             {imageToDisplay && (
                 <div className={cn(
-                    "absolute rounded-lg overflow-hidden shadow-2xl bg-black/30 backdrop-blur-sm transition-all duration-700 ease-in-out pointer-events-auto z-30",
+                    "absolute rounded-lg overflow-hidden shadow-2xl bg-black/30 backdrop-blur-sm pointer-events-auto z-30",
+                    !isResting ? "transition-all duration-700 ease-in-out" : "",
                     isResting 
-                        ? "w-[512px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-[calc(50%-6rem)]" // Centered with offset
+                        ? "w-[512px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                         : "w-48 lg:w-64 top-4 left-4"
                 )}>
                     <div className={cn(

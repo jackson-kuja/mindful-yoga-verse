@@ -120,7 +120,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                         <img 
                             src={nextPose.image} 
                             alt={nextPose.name} 
-                            className="w-72 h-48 object-cover rounded-lg mx-auto mb-4 shadow-lg"
+                            className="w-96 h-64 object-cover rounded-lg mx-auto mb-4 shadow-lg"
                         />
                         <span className="text-9xl font-bold text-yellow-400">
                             {Math.ceil(currentItem.duration - timeInCurrentItem)}
@@ -153,13 +153,6 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                             <div>
                                 <h2 className="text-3xl font-bold mb-1">{currentPose.name}</h2>
                                 <p className="text-neutral-300">{currentPose.cue}</p>
-                            </div>
-                        )}
-
-                        {nextPose && !isFinished && (
-                            <div className="bg-white/10 rounded-lg px-3 py-1 text-sm backdrop-blur-sm">
-                                <span className="text-neutral-400">Up Next: </span>
-                                <span className="font-semibold">{nextPose.name}</span>
                             </div>
                         )}
 

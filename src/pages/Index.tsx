@@ -17,15 +17,24 @@ const Index = () => {
   return (
     <>
       <section
-        className="flex items-center justify-center bg-white"
+        className="relative flex items-center justify-center overflow-hidden"
         style={{ minHeight: '75vh' }}
       >
-        <div className="container text-center px-4 md:px-6">
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          className="absolute top-0 left-0 w-full h-full object-cover z-0"
+          src="/lovable-uploads/20250614_1126_Tranquil Yoga Flow_simple_compose_01jxqgrf3kegmrv2c0wpjb2hen.mp4"
+        />
+        <div className="absolute top-0 left-0 w-full h-full bg-black/50 z-10" />
+        <div className="relative z-20 container text-center px-4 md:px-6">
           <div className="space-y-6">
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl text-white">
               Find Your Flow, Anytime.
             </h1>
-            <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+            <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl">
               Discover on-demand yoga sessions to calm your mind, strengthen your body, and uplift your spirit.
             </p>
             <Button asChild size="lg" aria-label="Browse all yoga sessions">

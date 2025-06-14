@@ -1,20 +1,37 @@
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { Session } from "@/data/sessions";
 
-// TODO: These should probably come from the data source or a config file
-const durations = ["15 min", "30 min", "45 min"];
-const levels = ["Beginner", "Intermediate", "Advanced", "All Levels"];
-const focuses = ["Flexibility", "Strength", "Relaxation"];
+// Get unique values from sessions data
+const categories = ['All', ...Array.from(new Set(Object.values(window.APP_DATA.sessions).map(s => s.category)))];
+const levels = ['All', 'Beginner', 'Intermediate', 'Advanced', 'All-Levels'];
+const durations = [
+    { label: "All", value: "all" },
+    { label: "Under 15 min", value: "0-15" },
+    { label: "16-30 min", value: "16-30" },
+    { label: "Over 30 min", value: "31-999" },
+];
 
-const FilterBar = () => {
-  // TODO: Implement state management and filtering logic
-  const handleFilterChange = (type: string, value: string) => {
-    console.log(`Filter changed: ${type} = ${value}`);
+interface FilterState {
+  category: string;
+  level: string;
+  duration: string;
+}
+
+interface FilterBarProps {
+    filters: FilterState;
+    onFilterChange: (filters: FilterState) => void;
+}
+
+const FilterBar = ({ filters, onFilterChange }: FilterBarProps) => {
+  
+  const handleValueChange = (type: keyof FilterState, value: string) => {
+    onFilterChange({ ...filters, [type]: value === 'All' ? 'all' : value });
   };
 
   const handleReset = () => {
-    console.log('Filters reset');
+    onFilterChange({ category: 'all', level: 'all', duration: 'all' });
   }
 
   return (
@@ -22,28 +39,28 @@ const FilterBar = () => {
       <div className="container flex flex-col sm:flex-row sm:items-center gap-4">
         <h3 className="text-md font-semibold mr-4 hidden sm:block">Filter By:</h3>
         <div className="grid grid-cols-2 sm:flex sm:items-center gap-4 flex-wrap">
-          <Select onValueChange={(value) => handleFilterChange('duration', value)}>
+          <Select value={filters.category} onValueChange={(value) => handleValueChange('category', value)}>
+            <SelectTrigger className="w-full sm:w-[180px]" aria-label="Filter by category">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={filters.duration} onValueChange={(value) => handleValueChange('duration', value)}>
             <SelectTrigger className="w-full sm:w-[180px]" aria-label="Filter by duration">
               <SelectValue placeholder="Duration" />
             </SelectTrigger>
             <SelectContent>
-              {durations.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+              {durations.map(d => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Select onValueChange={(value) => handleFilterChange('level', value)}>
+          <Select value={filters.level} onValueChange={(value) => handleValueChange('level', value)}>
             <SelectTrigger className="w-full sm:w-[180px]" aria-label="Filter by level">
               <SelectValue placeholder="Level" />
             </SelectTrigger>
             <SelectContent>
               {levels.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Select onValueChange={(value) => handleFilterChange('focus', value)}>
-            <SelectTrigger className="w-full sm:w-[180px]" aria-label="Filter by focus area">
-              <SelectValue placeholder="Focus Area" />
-            </SelectTrigger>
-            <SelectContent>
-              {focuses.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
@@ -54,4 +71,3 @@ const FilterBar = () => {
 };
 
 export default FilterBar;
-

@@ -1,18 +1,28 @@
 
 import { useParams, Link } from 'react-router-dom';
-import { getSessionBySlug } from '@/data/sessions';
+import { getSessionById } from '@/data/sessions';
+import { useProgress } from '@/hooks/useProgress';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Clock, BarChart3, Target } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { ArrowLeft, Clock, BarChart3, Star, User } from "lucide-react";
 import NotFound from './NotFound';
 
 const SessionDetail = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const session = slug ? getSessionBySlug(slug) : undefined;
+  const { id } = useParams<{ id: string }>();
+  const session = id ? getSessionById(id) : undefined;
+  const { getProgress, setProgress } = useProgress();
 
   if (!session) {
     return <NotFound />;
   }
+  
+  const progress = getProgress(session.id);
+
+  const handleProgressChange = (value: number[]) => {
+    setProgress(session.id, value[0]);
+  };
 
   return (
     <div className="container py-12">
@@ -26,12 +36,34 @@ const SessionDetail = () => {
       </div>
       <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
         <div className="md:col-span-2">
-          <div className="aspect-video bg-secondary rounded-lg flex items-center justify-center mb-6">
+          <div className="aspect-video bg-secondary rounded-lg flex items-center justify-center mb-6 relative overflow-hidden">
             {/* TODO: Implement actual video player */}
-            <p className="text-muted-foreground">Video Player Placeholder</p>
+            <img src={session.thumbnail} alt={session.name} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+              <p className="text-white/80 text-xl font-bold backdrop-blur-sm p-4 rounded-lg">Video Player Placeholder</p>
+            </div>
           </div>
-          <h1 className="text-4xl font-bold mb-2">{session.title}</h1>
-          <p className="text-lg text-muted-foreground">{session.description}</p>
+          <h1 className="text-4xl font-bold mb-2">{session.name}</h1>
+          <p className="text-lg text-muted-foreground mb-6">{session.description}</p>
+          <Card>
+            <CardHeader>
+              <CardTitle>Track Your Progress</CardTitle>
+              <CardDescription>Use the slider to mark how much of the session you've completed.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4">
+                <Label htmlFor="progress-slider" className="text-lg font-bold text-primary">{Math.round(progress)}%</Label>
+                <Slider
+                  id="progress-slider"
+                  defaultValue={[progress]}
+                  max={100}
+                  step={1}
+                  onValueCommit={handleProgressChange}
+                  aria-label="Session completion progress"
+                />
+              </div>
+            </CardContent>
+          </Card>
         </div>
         <div className="md:col-span-1">
           <Card>
@@ -43,24 +75,31 @@ const SessionDetail = () => {
                 <Clock className="w-5 h-5 text-muted-foreground" />
                 <div>
                   <p className="font-semibold">Duration</p>
-                  <p className="text-muted-foreground">{session.duration} minutes</p>
+                  <p className="text-muted-foreground">{session.length} minutes</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <BarChart3 className="w-5 h-5 text-muted-foreground" />
                 <div>
                   <p className="font-semibold">Level</p>
-                  <p className="text-muted-foreground">{session.level}</p>
+                  <p className="text-muted-foreground">{session.difficulty}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Target className="w-5 h-5 text-muted-foreground" />
+                <Star className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className="font-semibold">Focus</p>
-                  <p className="text-muted-foreground">{session.focus}</p>
+                  <p className="font-semibold">Category</p>
+                  <p className="text-muted-foreground">{session.category}</p>
                 </div>
               </div>
-               <Button size="lg" className="w-full mt-4" aria-label={`Start ${session.title} practice`}>Start Practice</Button>
+              <div className="flex items-center gap-3">
+                <User className="w-5 h-5 text-muted-foreground" />
+                <div>
+                  <p className="font-semibold">Instructor</p>
+                  <p className="text-muted-foreground">{session.instructor}</p>
+                </div>
+              </div>
+               <Button size="lg" className="w-full mt-4" aria-label={`Start ${session.name} practice`}>Start Practice</Button>
             </CardContent>
           </Card>
         </div>
@@ -70,4 +109,3 @@ const SessionDetail = () => {
 };
 
 export default SessionDetail;
-

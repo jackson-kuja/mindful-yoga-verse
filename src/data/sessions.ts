@@ -1,3 +1,9 @@
+export interface Pose {
+  duration: number; // in seconds
+  name: string;
+  cue: string;
+  image: string;
+}
 
 export interface Session {
   id: string; // Using slug as the unique ID
@@ -10,6 +16,7 @@ export interface Session {
   instructor: string;
   thumbnail: string; // Path to image
   videoUrl?: string; // Keep for future use
+  program?: Pose[];
 }
 
 export const sessions: Session[] = [
@@ -19,10 +26,22 @@ export const sessions: Session[] = [
     "description": "A gentle Vinyasa flow to energize your body and greet the day.",
     "category": "Energise",
     "difficulty": "Beginner",
-    "length": 8,
+    "length": 10,
     "tags": ["vinyasa", "morning", "full-body"],
     "instructor": "Ava Patel",
-    "thumbnail": "/lovable-uploads/e6441b44-9f3c-4885-bbdc-10812ac30a0f.png"
+    "thumbnail": "/lovable-uploads/e6441b44-9f3c-4885-bbdc-10812ac30a0f.png",
+    "program": [
+      { "duration": 60, "name": "Easy-Seat Centering", "cue": "Settle into your spine and take three deep breaths.", "image": "/lovable-uploads/c4cea92a-e035-4aed-be77-44b9e21c46db.png" },
+      { "duration": 60, "name": "Cat–Cow", "cue": "Gently articulate your spine with your breath.", "image": "/lovable-uploads/7b74422c-72cf-4cae-a131-2173b172a5ac.png" },
+      { "duration": 60, "name": "Half Sun Salutation", "cue": "Warm up the shoulders by sweeping your arms overhead.", "image": "/lovable-uploads/2b4d0124-3e50-4cf5-8fc1-ae0b87612818.png" },
+      { "duration": 60, "name": "High Lunge (Right)", "cue": "Step your right leg forward, keeping your knee stacked over the ankle.", "image": "/lovable-uploads/36425ed3-3c7a-470b-aa4a-e64d1f568db9.png" },
+      { "duration": 60, "name": "High Lunge (Left)", "cue": "Step your left leg forward, maintaining the same alignment.", "image": "/lovable-uploads/162f6795-2764-40d9-b2a9-ff2bacbdc987.png" },
+      { "duration": 60, "name": "Downward Dog", "cue": "Gently pedal your feet to awaken your hamstrings.", "image": "/lovable-uploads/a47871b4-dcd8-4e49-bafa-62339a211715.png" },
+      { "duration": 60, "name": "Low Cobra", "cue": "Lift your chest gently to open your heart space.", "image": "/lovable-uploads/0ca6648b-dbc8-435b-aeb9-bcd3ff5cf2b4.png" },
+      { "duration": 60, "name": "Chair Pose Pulses", "cue": "Sink your hips and find small, controlled pulses.", "image": "/lovable-uploads/f24ab972-a510-4e8a-ad7f-d1d5c08b10e6.png" },
+      { "duration": 60, "name": "Forward Fold", "cue": "Hang heavy, keeping your knees soft and releasing your arms.", "image": "/lovable-uploads/41eb127c-0604-48b4-bd70-117b6b2b6ed8.png" },
+      { "duration": 60, "name": "Mountain Pose", "cue": "Stand tall, bring your hands to your heart, and connect with your breath.", "image": "/lovable-uploads/313c9caa-4242-4154-9e06-f2baa7588844.png" }
+    ]
   },
   {
     "id": "core-stability-pilates",

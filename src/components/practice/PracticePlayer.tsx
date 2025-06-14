@@ -86,6 +86,9 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const remainingPoseSeconds = currentPose ? Math.max(0, Math.round(currentPose.duration - timeInCurrentItem)) : 0;
     const remainingTotalSeconds = totalDuration > 0 ? Math.max(0, totalDuration - elapsedTime) : 0;
 
+    const imageToDisplay = (isResting ? nextPose?.image : currentPose?.image) || '';
+    const nameToDisplay = (isResting ? nextPose?.name : currentPose?.name) || '';
+
     const handlePlayPause = () => setIsPlaying(!isPlaying);
     const handleReset = () => {
         setElapsedTime(0);
@@ -114,43 +117,49 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     return (
         <div className="relative w-full h-full text-white pointer-events-none">
             {isResting && nextPose && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-20 pointer-events-auto">
-                    <div className="text-center animate-fade-in">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm z-20 pointer-events-auto">
+                    <div className="text-center animate-fade-in -mt-48"> {/* Pushed up to make space for the image */}
                         <p className="text-lg text-neutral-300 mb-2">Get Ready For</p>
                         <h3 className="text-4xl font-bold mb-4">{nextPose.name}</h3>
-                        <div className="relative w-[512px] h-[341px] mx-auto">
-                            <img 
-                                src={nextPose.image} 
-                                alt={nextPose.name} 
-                                className="w-full h-full object-cover rounded-lg shadow-lg"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg">
+                    </div>
+                </div>
+            )}
+
+            {/* Unified and animated pose image container */}
+            {imageToDisplay && (
+                <div className={cn(
+                    "absolute rounded-lg overflow-hidden shadow-2xl bg-black/30 backdrop-blur-sm transition-all duration-700 ease-in-out pointer-events-auto z-30",
+                    isResting 
+                        ? "w-[512px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-[calc(50%-6rem)]" // Centered with offset
+                        : "w-48 lg:w-64 top-4 left-4"
+                )}>
+                    <div className={cn(
+                        "relative w-full",
+                        isResting ? "h-[341px]" : "aspect-[512/341]"
+                    )}>
+                        <img src={imageToDisplay} alt={nameToDisplay} className="w-full h-full object-cover" />
+                        
+                        {isResting && currentItem.type === 'rest' && (
+                             <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg">
                                 <span className="text-9xl font-bold text-yellow-400 drop-shadow-lg">
                                     {Math.ceil(currentItem.duration - timeInCurrentItem)}
                                 </span>
                             </div>
-                        </div>
+                        )}
                     </div>
+                    
+                    {!isResting && currentPose && (
+                        <div className="p-2 space-y-1">
+                            <Progress value={isFinished ? 100 : poseProgress} className="h-1 bg-white/30 [&>div]:bg-white" />
+                            <div className="text-xs text-right text-neutral-300 font-mono">
+                                {isFinished ? 'Done' : `${remainingPoseSeconds} ${remainingPoseSeconds === 1 ? 'second' : 'seconds'} left`}
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
             
             <div className={cn("transition-opacity duration-500", isResting ? 'opacity-20' : 'opacity-100')}>
-                {/* TOP-LEFT: Picture-in-Picture & Pose Timer */}
-                {currentPose && (
-                    <div className="absolute top-4 left-4 flex items-start gap-4">
-                        <div className="w-48 lg:w-64 rounded-lg overflow-hidden shadow-2xl bg-black/30 backdrop-blur-sm pointer-events-auto">
-                            <img src={currentPose.image} alt={currentPose.name} className="w-full h-auto object-cover" />
-                             <div className="p-2 space-y-1">
-                                <Progress value={isFinished ? 0 : 100 - poseProgress} dir="rtl" className="h-1 bg-white/30 [&>div]:bg-white" />
-                                <div className="text-xs text-right text-neutral-300 font-mono">
-                                    {isFinished ? 'Done' : `${remainingPoseSeconds} ${remainingPoseSeconds === 1 ? 'second' : 'seconds'} left`}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-
                 {/* BOTTOM: Info, Controls, Progress */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
                      <div className="max-w-3xl mx-auto flex flex-col items-center text-center gap-4">
@@ -178,7 +187,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                                 <span>{formatTime(elapsedTime)}</span>
                                 <span>-{formatTime(remainingTotalSeconds)}</span>
                             </div>
-                            <Progress value={100 - totalProgress} dir="rtl" className="h-1 bg-white/20 [&>div]:bg-white" />
+                            <Progress value={totalProgress} className="h-1 bg-white/20 [&>div]:bg-white" />
                         </div>
                      </div>
                 </div>

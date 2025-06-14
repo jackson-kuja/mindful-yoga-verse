@@ -25,7 +25,7 @@ const SessionCard = ({ session, showProgress = false, progress = 0 }: SessionCar
   return (
     <Card className="h-full flex flex-col transition-shadow duration-300 group-hover:shadow-lg overflow-hidden">
       <Link to={`/sessions/${session.id}`} className="block group flex-grow flex flex-col" aria-label={`View details for ${session.name}`}>
-        <div className="relative aspect-video bg-secondary">
+        <div className="relative aspect-[2/3] bg-secondary">
           {/* TODO: Replace with actual session thumbnail image */}
           <img src={session.thumbnail} alt={session.name} className="w-full h-full object-cover" />
           {showProgress && (

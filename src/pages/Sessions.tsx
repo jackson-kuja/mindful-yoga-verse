@@ -1,10 +1,18 @@
-
 import { useState } from "react";
 import FilterBar from "@/components/FilterBar";
 import SessionCard from "@/components/SessionCard";
 import { Button } from "@/components/ui/button";
 import { sessions } from "@/data/sessions";
 import type { Session } from "@/data/sessions";
+
+const allCategories = ['All', ...Array.from(new Set(sessions.map(s => s.category)))];
+const allLevels = ['All', 'Beginner', 'Intermediate', 'Advanced', 'All-Levels'];
+const allDurations = [
+    { label: "All", value: "all" },
+    { label: "Under 15 min", value: "0-15" },
+    { label: "16-30 min", value: "16-30" },
+    { label: "Over 30 min", value: "31-999" },
+];
 
 const Sessions = () => {
   const [filters, setFilters] = useState({
@@ -17,14 +25,41 @@ const Sessions = () => {
     setFilters({ category: 'all', level: 'all', duration: 'all' });
   };
   
-  const filteredSessions = sessions.filter(session => {
-    const categoryMatch = filters.category === 'all' || session.category === filters.category;
-    const levelMatch = filters.level === 'all' || session.difficulty === filters.level || (filters.level !== 'Advanced' && session.difficulty === 'All-Levels');
-    
-    const [min, max] = filters.duration.split('-').map(Number);
-    const durationMatch = filters.duration === 'all' || (session.length >= min && session.length <= max);
+  // Matcher functions for filtering
+  const categoryMatch = (session: Session, category: string) => category === 'all' || session.category === category;
+  
+  const levelMatch = (session: Session, level: string) => {
+    if (level === 'all') return true;
+    // A session is included if its difficulty matches, or if it's an 'All-Levels' session (except for 'Advanced' filter)
+    return session.difficulty === level || (level !== 'Advanced' && session.difficulty === 'All-Levels');
+  };
 
-    return categoryMatch && levelMatch && durationMatch;
+  const durationMatch = (session: Session, duration: string) => {
+    if (duration === 'all') return true;
+    const [min, max] = duration.split('-').map(Number);
+    return session.length >= min && session.length <= max;
+  };
+
+  // Dynamically calculate available options based on other active filters
+  const availableCategories = allCategories.filter(category => {
+    if (category === 'All') return true;
+    const categoryValue = category === 'All' ? 'all' : category;
+    return sessions.some(s => s.category === categoryValue && levelMatch(s, filters.level) && durationMatch(s, filters.duration));
+  });
+
+  const availableLevels = allLevels.filter(level => {
+    if (level === 'All') return true;
+    const levelValue = level === 'All' ? 'all' : level;
+    return sessions.some(s => categoryMatch(s, filters.category) && levelMatch(s, levelValue) && durationMatch(s, filters.duration));
+  });
+
+  const availableDurations = allDurations.filter(d => {
+    if (d.value === 'all') return true;
+    return sessions.some(s => categoryMatch(s, filters.category) && levelMatch(s, filters.level) && durationMatch(s, d.value));
+  });
+
+  const filteredSessions = sessions.filter(session => {
+    return categoryMatch(session, filters.category) && levelMatch(session, filters.level) && durationMatch(session, filters.duration);
   });
 
   const groupedSessions = filteredSessions.reduce((acc, session) => {
@@ -34,7 +69,13 @@ const Sessions = () => {
 
   return (
     <>
-      <FilterBar filters={filters} onFilterChange={setFilters} />
+      <FilterBar 
+        filters={filters} 
+        onFilterChange={setFilters} 
+        availableCategories={availableCategories}
+        availableLevels={availableLevels}
+        availableDurations={availableDurations}
+      />
       <div className="container py-12">
         {Object.entries(groupedSessions).length > 0 ? (
           <div className="space-y-12">

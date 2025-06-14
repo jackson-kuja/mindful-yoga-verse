@@ -1,18 +1,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Session } from "@/data/sessions";
-import { sessions } from "@/data/sessions";
-
-// Get unique values from sessions data
-const categories = ['All', ...Array.from(new Set(sessions.map(s => s.category)))];
-const levels = ['All', 'Beginner', 'Intermediate', 'Advanced', 'All-Levels'];
-const durations = [
-    { label: "All", value: "all" },
-    { label: "Under 15 min", value: "0-15" },
-    { label: "16-30 min", value: "16-30" },
-    { label: "Over 30 min", value: "31-999" },
-];
 
 interface FilterState {
   category: string;
@@ -23,9 +11,18 @@ interface FilterState {
 interface FilterBarProps {
     filters: FilterState;
     onFilterChange: (filters: FilterState) => void;
+    availableCategories: string[];
+    availableLevels: string[];
+    availableDurations: { label: string; value: string }[];
 }
 
-const FilterBar = ({ filters, onFilterChange }: FilterBarProps) => {
+const FilterBar = ({ 
+  filters, 
+  onFilterChange, 
+  availableCategories, 
+  availableLevels, 
+  availableDurations 
+}: FilterBarProps) => {
   
   const handleValueChange = (type: keyof FilterState, value: string) => {
     onFilterChange({ ...filters, [type]: value });
@@ -45,7 +42,7 @@ const FilterBar = ({ filters, onFilterChange }: FilterBarProps) => {
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map(c => <SelectItem key={c} value={c === 'All' ? 'all' : c}>{c}</SelectItem>)}
+              {availableCategories.map(c => <SelectItem key={c} value={c === 'All' ? 'all' : c}>{c}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={filters.duration} onValueChange={(value) => handleValueChange('duration', value)}>
@@ -53,7 +50,7 @@ const FilterBar = ({ filters, onFilterChange }: FilterBarProps) => {
               <SelectValue placeholder="Duration" />
             </SelectTrigger>
             <SelectContent>
-              {durations.map(d => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}
+              {availableDurations.map(d => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={filters.level} onValueChange={(value) => handleValueChange('level', value)}>
@@ -61,7 +58,7 @@ const FilterBar = ({ filters, onFilterChange }: FilterBarProps) => {
               <SelectValue placeholder="Level" />
             </SelectTrigger>
             <SelectContent>
-              {levels.map(l => <SelectItem key={l} value={l === 'All' ? 'all' : l}>{l}</SelectItem>)}
+              {availableLevels.map(l => <SelectItem key={l} value={l === 'All' ? 'all' : l}>{l}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>

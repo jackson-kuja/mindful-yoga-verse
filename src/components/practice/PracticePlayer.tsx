@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import type { Session, Pose } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
@@ -83,6 +82,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const poseProgress = currentPose ? (timeInCurrentItem / currentPose.duration) * 100 : 0;
     const totalProgress = totalDuration > 0 ? (elapsedTime / totalDuration) * 100 : 0;
     const isFinished = elapsedTime >= totalDuration;
+    const remainingPoseSeconds = currentPose ? Math.max(0, Math.round(currentPose.duration - timeInCurrentItem)) : 0;
 
     const handlePlayPause = () => setIsPlaying(!isPlaying);
     const handleReset = () => {
@@ -111,11 +111,16 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
 
     return (
         <div className="relative w-full h-full text-white pointer-events-none">
-            {isResting && (
+            {isResting && nextPose && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-20 pointer-events-auto">
                     <div className="text-center animate-fade-in">
                         <p className="text-lg text-neutral-300 mb-2">Get Ready For</p>
-                        <h3 className="text-4xl font-bold mb-6">{nextPose?.name}</h3>
+                        <h3 className="text-4xl font-bold mb-4">{nextPose.name}</h3>
+                        <img 
+                            src={nextPose.image} 
+                            alt={nextPose.name} 
+                            className="w-40 h-40 object-cover rounded-lg mx-auto mb-4 shadow-lg"
+                        />
                         <span className="text-9xl font-bold text-yellow-400">
                             {Math.ceil(currentItem.duration - timeInCurrentItem)}
                         </span>
@@ -132,7 +137,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
                              <div className="p-2 space-y-1">
                                 <Progress value={isFinished ? 100 : poseProgress} className="h-1 bg-white/30 [&>div]:bg-white" />
                                 <div className="text-xs text-right text-neutral-300 font-mono">
-                                    {isFinished ? 'Done' : formatTime(currentPose.duration - timeInCurrentItem)}
+                                    {isFinished ? 'Done' : `${remainingPoseSeconds} ${remainingPoseSeconds === 1 ? 'second' : 'seconds'} left`}
                                 </div>
                             </div>
                         </div>

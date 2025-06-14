@@ -1,10 +1,11 @@
 
-import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Link, useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Session } from "@/data/sessions";
 import ProgressRing from "./ProgressRing";
-import { Clock } from "lucide-react";
+import { Clock, ArrowRight } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface SessionCardProps {
   session: Session;
@@ -13,9 +14,17 @@ interface SessionCardProps {
 }
 
 const SessionCard = ({ session, showProgress = false, progress = 0 }: SessionCardProps) => {
+  const navigate = useNavigate();
+
+  const handleStartPractice = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/practice/${session.id}`);
+  };
+  
   return (
-    <Link to={`/sessions/${session.id}`} className="block group" aria-label={`View details for ${session.name}`}>
-      <Card className="h-full flex flex-col transition-shadow duration-300 group-hover:shadow-lg overflow-hidden">
+    <Card className="h-full flex flex-col transition-shadow duration-300 group-hover:shadow-lg overflow-hidden">
+      <Link to={`/sessions/${session.id}`} className="block group flex-grow flex flex-col" aria-label={`View details for ${session.name}`}>
         <div className="relative aspect-video bg-secondary">
           {/* TODO: Replace with actual session thumbnail image */}
           <img src={session.thumbnail} alt={session.name} className="w-full h-full object-cover" />
@@ -36,8 +45,14 @@ const SessionCard = ({ session, showProgress = false, progress = 0 }: SessionCar
           </div>
           <Badge variant="outline">{session.difficulty}</Badge>
         </CardContent>
-      </Card>
-    </Link>
+      </Link>
+      <CardFooter className="p-4 border-t mt-auto">
+        <Button onClick={handleStartPractice} className="w-full" size="sm" aria-label={`Start ${session.name} practice`}>
+          Start Practice
+          <ArrowRight className="w-4 h-4" />
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
 

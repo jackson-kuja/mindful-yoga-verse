@@ -1,5 +1,4 @@
-
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getSessionById } from '@/data/sessions';
 import { useProgress } from '@/hooks/useProgress';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,7 @@ import NotFound from './NotFound';
 
 const SessionDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const session = id ? getSessionById(id) : undefined;
   const { getProgress, setProgress } = useProgress();
 
@@ -22,6 +22,10 @@ const SessionDetail = () => {
 
   const handleProgressChange = (value: number[]) => {
     setProgress(session.id, value[0]);
+  };
+
+  const handleStartPractice = () => {
+    navigate(`/practice/${session.id}`);
   };
 
   return (
@@ -99,7 +103,7 @@ const SessionDetail = () => {
                   <p className="text-muted-foreground">{session.instructor}</p>
                 </div>
               </div>
-               <Button size="lg" className="w-full mt-4" aria-label={`Start ${session.name} practice`}>Start Practice</Button>
+               <Button size="lg" className="w-full mt-4" onClick={handleStartPractice} aria-label={`Start ${session.name} practice`}>Start Practice</Button>
             </CardContent>
           </Card>
         </div>

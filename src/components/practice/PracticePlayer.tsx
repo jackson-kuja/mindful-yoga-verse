@@ -186,9 +186,9 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
 
                 {/* TOP-RIGHT: Finish Button */}
                 <div className="absolute top-4 right-4 pointer-events-auto">
-                    <Button onClick={handleFinish} variant="ghost" size="icon" className="rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm">
-                        <X className="w-6 h-6" />
-                        <span className="sr-only">Finish Session</span>
+                    <Button onClick={handleFinish} variant="ghost" className="rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm">
+                        End Session
+                        <X />
                     </Button>
                 </div>
             </div>

@@ -1,3 +1,4 @@
+
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getSessionById } from '@/data/sessions';
 import { useProgress } from '@/hooks/useProgress';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { ArrowLeft, Clock, BarChart3, Star, User } from "lucide-react";
+import { ArrowLeft, Clock, BarChart3, Star, User, Play } from "lucide-react";
 import NotFound from './NotFound';
 
 const SessionDetail = () => {
@@ -44,7 +45,15 @@ const SessionDetail = () => {
             {/* TODO: Implement actual video player */}
             <img src={session.thumbnail} alt={session.name} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-              <p className="text-white/80 text-xl font-bold backdrop-blur-sm p-4 rounded-lg">Video Player Placeholder</p>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-24 h-24 bg-white/20 hover:bg-white/30 rounded-full backdrop-blur-sm transition-colors"
+                aria-label="Play video"
+                onClick={handleStartPractice}
+              >
+                <Play className="w-12 h-12 text-white fill-white" />
+              </Button>
             </div>
           </div>
           <h1 className="text-4xl font-bold mb-2">{session.name}</h1>

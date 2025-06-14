@@ -43,7 +43,7 @@ export const sessions: Session[] = [
     "length": 10,
     "tags": ["seated", "office", "stretch"],
     "instructor": "Jade Nguyen",
-    "thumbnail": "https://images.unsplash.com/photo-1545350189-b3bf1f829372?q=80&w=800&auto=format&fit=crop"
+    "thumbnail": "/lovable-uploads/337ffd86-4952-49d0-a6ad-7552a944cbe0.png"
   },
   {
     "id": "slow-flow-hips-hamstrings",
@@ -54,7 +54,7 @@ export const sessions: Session[] = [
     "length": 25,
     "tags": ["slow", "yin-inspired", "lower-body"],
     "instructor": "Marco Rossi",
-    "thumbnail": "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?q=80&w=800&auto=format&fit=crop"
+    "thumbnail": "/lovable-uploads/b5b544b9-63a7-452a-b94d-fe1a89f6cf33.png"
   },
   {
     "id": "power-vinyasa-sweat",
@@ -76,7 +76,7 @@ export const sessions: Session[] = [
     "length": 5,
     "tags": ["meditation", "focus", "breath"],
     "instructor": "Liam O'Connor",
-    "thumbnail": "https://images.unsplash.com/photo-1474418397713-7e15e4d5e154?q=80&w=800&auto=format&fit=crop"
+    "thumbnail": "/lovable-uploads/9a964a3e-bdcf-4085-b7f6-58d03016998d.png"
   },
   {
     "id": "lower-back-love",
@@ -87,7 +87,7 @@ export const sessions: Session[] = [
     "length": 15,
     "tags": ["gentle", "back-care", "mobility"],
     "instructor": "Harper Lee",
-    "thumbnail": "https://images.unsplash.com/photo-1604514256612-4ff0c483b1c6?q=80&w=800&auto=format&fit=crop"
+    "thumbnail": "/lovable-uploads/5ce869b9-9ee9-445e-8eff-66f76ac99f45.png"
   },
   {
     "id": "evening-unwind-restorative",

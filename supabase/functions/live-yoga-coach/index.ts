@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Client, types as T } from "https://esm.sh/@google/generative-ai@0.15.0";
 
@@ -27,7 +26,7 @@ class LiveYogaSession {
   }
   
   public async init() {
-    console.log("LiveYogaSession: init() called.");
+    console.log("LiveYogaSession: init() called. Calling startSession...");
     await this.startSession();
     console.log("LiveYogaSession: init() completed.");
   }
@@ -48,14 +47,16 @@ class LiveYogaSession {
   }
   
   public close() {
+    console.log("Closing LiveYogaSession.");
     if (this.timerId) {
       clearTimeout(this.timerId);
+      this.timerId = undefined;
     }
-    this.session?.close();
+    this.session?.close().catch(e => console.error("Error closing gemini session:", e));
   }
 
   private async startSession() {
-    console.log("Starting new Gemini Live session...");
+    console.log("Starting new Gemini Live session... Calling client.aio.live.connect.");
     try {
       this.session = await this.client.aio.live.connect({
         model: "gemini-1.5-flash-latest", // Use a stable model
@@ -128,45 +129,63 @@ class LiveYogaSession {
 }
 
 serve(async (req) => {
-  if (req.headers.get("upgrade")?.toLowerCase() !== "websocket") {
-    return new Response("request isn't a websocket upgrade", { status: 400 });
-  }
+  try {
+    if (req.headers.get("upgrade")?.toLowerCase() !== "websocket") {
+      return new Response("request isn't a websocket upgrade", { status: 400 });
+    }
 
-  console.log("WebSocket upgrade request received.");
-  const { socket, response } = Deno.upgradeWebSocket(req);
-  let liveSession: LiveYogaSession | null = null;
-  
-  socket.onopen = async () => {
-    try {
-      console.log("WebSocket opened. Creating and initializing LiveYogaSession.");
-      liveSession = new LiveYogaSession((pcm) => {
-        if (socket.readyState === WebSocket.OPEN) {
-          socket.send(pcm);
+    console.log("WebSocket upgrade request received.");
+    const { socket, response } = Deno.upgradeWebSocket(req);
+    let liveSession: LiveYogaSession | null = null;
+    
+    socket.onopen = async () => {
+      try {
+        console.log("WebSocket opened. Creating LiveYogaSession.");
+        liveSession = new LiveYogaSession((pcm) => {
+          if (socket.readyState === WebSocket.OPEN) {
+            socket.send(pcm);
+          }
+        });
+        console.log("LiveYogaSession created. Initializing...");
+        await liveSession.init();
+        console.log("LiveYogaSession initialized successfully.");
+      } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        console.error("Fatal error during WebSocket onopen and session init:", errorMessage);
+        if (e instanceof Error && e.stack) {
+          console.error("Stack trace:", e.stack);
         }
-      });
-      await liveSession.init();
-      console.log("LiveYogaSession initialized successfully.");
-    } catch (e) {
-      console.error("Fatal error during WebSocket onopen and session init:", e);
-      socket.close(1011, `Session initialization failed: ${e.message}`);
-    }
-  };
-  
-  socket.onmessage = (event) => {
-    if (liveSession && event.data instanceof ArrayBuffer) {
-      liveSession.pushFrame(new Uint8Array(event.data));
-    }
-  };
-  
-  socket.onclose = () => {
-    console.log("Client disconnected");
-    liveSession?.close();
-  };
-  
-  socket.onerror = (error) => {
-    console.error("WebSocket error:", error);
-    liveSession?.close();
-  };
+        socket.close(1011, `Session initialization failed: ${errorMessage}`);
+      }
+    };
+    
+    socket.onmessage = (event) => {
+      if (liveSession && event.data instanceof ArrayBuffer) {
+        liveSession.pushFrame(new Uint8Array(event.data)).catch(err => {
+          console.error("Error pushing frame, closing session:", err);
+          liveSession?.close();
+          socket.close(1011, "Error processing video frame.");
+        });
+      }
+    };
+    
+    socket.onclose = () => {
+      console.log("Client disconnected");
+      liveSession?.close();
+    };
+    
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      liveSession?.close();
+    };
 
-  return response;
+    return response;
+  } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    console.error("Fatal error in serve handler:", errorMessage);
+    if (e instanceof Error && e.stack) {
+        console.error("Stack trace:", e.stack);
+    }
+    return new Response(`Internal Server Error: ${errorMessage}`, { status: 500 });
+  }
 });

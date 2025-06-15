@@ -17,7 +17,7 @@ class LiveYogaSession {
   constructor(private sendPCM: (buf: ArrayBuffer) => void) {
     const apiKey = Deno.env.get("GEMINI_KEY");
     if (!apiKey) {
-      throw new Error("GEMINI_KEY is not set in environment variables");
+      throw new Error("The GEMINI_KEY environment variable is not set.");
     }
     this.client = new Client({ apiKey });
     this.startSession();
@@ -49,7 +49,7 @@ class LiveYogaSession {
     console.log("Starting new Gemini Live session...");
     try {
       this.session = await this.client.aio.live.connect({
-        model: "gemini-1.5-flash-preview-0514", // Using a stable model, preview one may not be available
+        model: "gemini-1.5-flash-latest", // Use a stable model
         config: {
           response_modalities: ["AUDIO"],
           media_resolution: T.MediaResolution.MEDIA_RESOLUTION_LOW,

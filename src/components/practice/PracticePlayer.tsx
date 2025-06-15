@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo, useRef } from 'react';
 import type { Session, Pose } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
@@ -40,7 +39,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const totalDuration = useMemo(() => programWithRests.reduce((sum, item) => sum + item.duration, 0), [programWithRests]);
 
     const [elapsedTime, setElapsedTime] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(true);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     const isFinished = useMemo(() => totalDuration > 0 && elapsedTime >= totalDuration, [elapsedTime, totalDuration]);
 

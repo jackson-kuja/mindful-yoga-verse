@@ -15,12 +15,21 @@ class LiveYogaSession {
   private timerId: number | undefined;
 
   constructor(private sendPCM: (buf: ArrayBuffer) => void) {
+    console.log("LiveYogaSession: constructor starting.");
     const apiKey = Deno.env.get("GEMINI_KEY");
     if (!apiKey) {
+      console.error("LiveYogaSession Error: The GEMINI_KEY environment variable is not set.");
       throw new Error("The GEMINI_KEY environment variable is not set.");
     }
+    console.log("LiveYogaSession: GEMINI_KEY found.");
     this.client = new Client({ apiKey });
-    this.startSession();
+    console.log("LiveYogaSession: Client initialized.");
+  }
+  
+  public async init() {
+    console.log("LiveYogaSession: init() called.");
+    await this.startSession();
+    console.log("LiveYogaSession: init() completed.");
   }
 
   async pushFrame(jpeg: Uint8Array) {
@@ -64,7 +73,7 @@ class LiveYogaSession {
         },
       });
 
-      console.log("Session started. Waiting for responses...");
+      console.log("Gemini session connected successfully.");
 
       (async () => {
         try {
@@ -73,14 +82,16 @@ class LiveYogaSession {
                 this.sendPCM(resp.data);
               }
             }
+            console.log("Gemini response stream ended.");
         } catch(e) {
-            console.error("Error receiving data:", e);
+            console.error("Error receiving data from Gemini:", e);
         }
       })();
 
       this.sendPoseTurn();
     } catch (e) {
-      console.error("Failed to start Gemini session:", e);
+      console.error("Failed to start Gemini session inside startSession:", e);
+      throw e; // Re-throw the error to be caught by the caller
     }
   }
 
@@ -110,8 +121,7 @@ class LiveYogaSession {
 
   private async restart() {
     console.log("Restarting session...");
-    await this.session.close();
-    if(this.timerId) clearTimeout(this.timerId);
+    this.close();
     this.started = Date.now();
     await this.startSession();
   }
@@ -122,20 +132,23 @@ serve(async (req) => {
     return new Response("request isn't a websocket upgrade", { status: 400 });
   }
 
+  console.log("WebSocket upgrade request received.");
   const { socket, response } = Deno.upgradeWebSocket(req);
   let liveSession: LiveYogaSession | null = null;
   
-  socket.onopen = () => {
-    console.log("Client connected");
+  socket.onopen = async () => {
     try {
+      console.log("WebSocket opened. Creating and initializing LiveYogaSession.");
       liveSession = new LiveYogaSession((pcm) => {
         if (socket.readyState === WebSocket.OPEN) {
           socket.send(pcm);
         }
       });
+      await liveSession.init();
+      console.log("LiveYogaSession initialized successfully.");
     } catch (e) {
-      console.error("Failed to start session:", e.message);
-      socket.close(1011, e.message);
+      console.error("Fatal error during WebSocket onopen and session init:", e);
+      socket.close(1011, `Session initialization failed: ${e.message}`);
     }
   };
   

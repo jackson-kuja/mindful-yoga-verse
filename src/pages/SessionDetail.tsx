@@ -1,9 +1,8 @@
-
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getSessionById } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Clock, BarChart3, Star, User, Play, Lock } from "lucide-react";
+import { ArrowLeft, Clock, BarChart3, Star, User, Play, Lock, Bot } from "lucide-react";
 import NotFound from './NotFound';
 import { isFuture, formatDistanceToNow } from 'date-fns';
 
@@ -45,6 +44,10 @@ const SessionDetail = () => {
   
   const handleStartPractice = () => {
     navigate(`/practice/${session.id}`);
+  };
+
+  const handleStartAiPractice = () => {
+    navigate(`/practice/${session.id}?mode=ai`);
   };
 
   return (
@@ -111,7 +114,13 @@ const SessionDetail = () => {
                   <p className="text-muted-foreground">{session.instructor}</p>
                 </div>
               </div>
-               <Button size="lg" className="w-full mt-4" onClick={handleStartPractice} aria-label={`Start ${session.name} practice`}>Start Practice</Button>
+               <div className="pt-4 space-y-2">
+                <Button size="lg" className="w-full" onClick={handleStartPractice} aria-label={`Start ${session.name} practice`}>Start Practice</Button>
+                <Button size="lg" className="w-full" variant="secondary" onClick={handleStartAiPractice} aria-label={`Start ${session.name} with AI Coach`}>
+                  <Bot className="w-5 h-5 mr-2" />
+                  Start with AI Coach
+                </Button>
+               </div>
             </CardContent>
           </Card>
         </div>

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,7 +7,6 @@ import Index from "./pages/Index";
 import Sessions from "./pages/Sessions";
 import SessionDetail from "./pages/SessionDetail";
 import PracticePage from "./pages/Practice";
-import ClassPage from "./pages/Class";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
@@ -26,7 +24,6 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/practice/:id" element={<PracticePage />} />
-            <Route path="/class/:flowId" element={<ClassPage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route element={<Layout />}>
               <Route path="/" element={<Index />} />

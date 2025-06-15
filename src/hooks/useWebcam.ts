@@ -3,7 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 
 export const useWebcam = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = = useState<string | null>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
     let streamInstance: MediaStream | null = null;
@@ -14,6 +15,7 @@ export const useWebcam = () => {
           return;
         }
         streamInstance = await navigator.mediaDevices.getUserMedia({ video: true });
+        setStream(streamInstance);
         if (videoRef.current) {
           videoRef.current.srcObject = streamInstance;
         }
@@ -39,5 +41,5 @@ export const useWebcam = () => {
     };
   }, []);
 
-  return { videoRef, error };
+  return { videoRef, error, stream };
 };

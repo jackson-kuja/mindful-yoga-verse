@@ -4,40 +4,8 @@ import { Link } from "react-router-dom";
 import { sessions } from "@/data/sessions";
 import type { Session } from "@/data/sessions";
 import SessionCard from "@/components/SessionCard";
-import { useRef, useEffect } from "react";
 
 const Index = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handleEnded = () => {
-      if (video) {
-        video.playbackRate = -1;
-        video.play();
-      }
-    };
-
-    const handleTimeUpdate = () => {
-      if (video && video.currentTime <= 0.1 && video.playbackRate < 0) {
-        video.playbackRate = 1;
-        video.play();
-      }
-    };
-
-    video.addEventListener("ended", handleEnded);
-    video.addEventListener("timeupdate", handleTimeUpdate);
-
-    return () => {
-      if (video) {
-        video.removeEventListener("ended", handleEnded);
-        video.removeEventListener("timeupdate", handleTimeUpdate);
-      }
-    };
-  }, []);
-
   const groupedSessions = sessions.reduce((acc, session) => {
     (acc[session.category] = acc[session.category] || []).push(session);
     return acc;
@@ -53,8 +21,8 @@ const Index = () => {
         style={{ minHeight: '75vh' }}
       >
         <video 
-          ref={videoRef}
           autoPlay 
+          loop 
           muted 
           playsInline 
           className="absolute top-0 left-0 w-full h-full object-cover z-0"
@@ -64,10 +32,10 @@ const Index = () => {
         <div className="relative z-20 container text-center px-4 md:px-6">
           <div className="space-y-6">
             <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl text-white">
-              Your Personal Yoga Coach.
+              Find Your Flow, Anytime.
             </h1>
             <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl">
-              Just 10 minutes a day to a stronger, more mindful you. On-demand sessions for your schedule.
+              Discover on-demand yoga sessions to calm your mind, strengthen your body, and uplift your spirit.
             </p>
             <Button asChild size="lg" aria-label="Browse all yoga sessions">
               <Link to="/sessions">Browse All Sessions</Link>

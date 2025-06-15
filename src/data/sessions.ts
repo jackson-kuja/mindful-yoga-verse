@@ -1,3 +1,4 @@
+
 export interface Pose {
   duration: number; // in seconds
   name: string;
@@ -17,6 +18,7 @@ export interface Session {
   thumbnail: string; // Path to image
   videoUrl?: string; // Keep for future use
   program?: Pose[];
+  releaseDate?: string; // ISO date string
 }
 
 export const sessions: Session[] = [
@@ -49,10 +51,11 @@ export const sessions: Session[] = [
     "description": "Strengthen your core and improve posture with this focused Pilates session.",
     "category": "Strength",
     "difficulty": "Intermediate",
-    "length": 9,
+    "length": 15,
     "tags": ["pilates", "core", "stability"],
     "instructor": "Diego Ramos",
-    "thumbnail": "/lovable-uploads/3973e1c6-f0b9-4359-b326-819f2e428271.png"
+    "thumbnail": "/lovable-uploads/3973e1c6-f0b9-4359-b326-819f2e428271.png",
+    "releaseDate": "2025-06-22T00:00:00.000Z"
   },
   {
     "id": "lunchtime-chair-stretch",
@@ -60,10 +63,11 @@ export const sessions: Session[] = [
     "description": "Relieve tension in your neck, shoulders, and back without leaving your chair.",
     "category": "Desk Relief",
     "difficulty": "Beginner",
-    "length": 7,
+    "length": 10,
     "tags": ["seated", "office", "stretch"],
     "instructor": "Jade Nguyen",
-    "thumbnail": "/lovable-uploads/337ffd86-4952-49d0-a6ad-7552a944cbe0.png"
+    "thumbnail": "/lovable-uploads/337ffd86-4952-49d0-a6ad-7552a944cbe0.png",
+    "releaseDate": "2025-06-29T00:00:00.000Z"
   },
   {
     "id": "slow-flow-hips-hamstrings",
@@ -71,10 +75,11 @@ export const sessions: Session[] = [
     "description": "A mindful practice to release tight hips and hamstrings.",
     "category": "Flexibility",
     "difficulty": "Intermediate",
-    "length": 9,
+    "length": 25,
     "tags": ["slow", "yin-inspired", "lower-body"],
     "instructor": "Marco Rossi",
-    "thumbnail": "/lovable-uploads/b5b544b9-63a7-452a-b94d-fe1a89f6cf33.png"
+    "thumbnail": "/lovable-uploads/b5b544b9-63a7-452a-b94d-fe1a89f6cf33.png",
+    "releaseDate": "2025-07-06T00:00:00.000Z"
   },
   {
     "id": "power-vinyasa-sweat",
@@ -82,10 +87,11 @@ export const sessions: Session[] = [
     "description": "A dynamic and challenging flow to build heat, strength, and endurance.",
     "category": "Strength",
     "difficulty": "Advanced",
-    "length": 8,
+    "length": 30,
     "tags": ["power", "cardio", "balance"],
     "instructor": "Sofia Hernández",
-    "thumbnail": "/lovable-uploads/2cc38afc-3eb4-40b2-a5a6-79ad0e96817a.png"
+    "thumbnail": "/lovable-uploads/2cc38afc-3eb4-40b2-a5a6-79ad0e96817a.png",
+    "releaseDate": "2025-07-13T00:00:00.000Z"
   },
   {
     "id": "mid-afternoon-micro-meditation",
@@ -93,10 +99,11 @@ export const sessions: Session[] = [
     "description": "A short, guided meditation to reset your focus and calm your mind.",
     "category": "Mindfulness",
     "difficulty": "All-Levels",
-    "length": 7,
+    "length": 5,
     "tags": ["meditation", "focus", "breath"],
     "instructor": "Liam O'Connor",
-    "thumbnail": "/lovable-uploads/9a964a3e-bdcf-4085-b7f6-58d03016998d.png"
+    "thumbnail": "/lovable-uploads/9a964a3e-bdcf-4085-b7f6-58d03016998d.png",
+    "releaseDate": "2025-07-20T00:00:00.000Z"
   },
   {
     "id": "lower-back-love",
@@ -104,10 +111,11 @@ export const sessions: Session[] = [
     "description": "Gentle stretches and poses to alleviate lower back pain and improve mobility.",
     "category": "Desk Relief",
     "difficulty": "Beginner",
-    "length": 9,
+    "length": 15,
     "tags": ["gentle", "back-care", "mobility"],
     "instructor": "Harper Lee",
-    "thumbnail": "/lovable-uploads/5ce869b9-9ee9-445e-8eff-66f76ac99f45.png"
+    "thumbnail": "/lovable-uploads/5ce869b9-9ee9-445e-8eff-66f76ac99f45.png",
+    "releaseDate": "2025-07-27T00:00:00.000Z"
   },
   {
     "id": "evening-unwind-restorative",
@@ -115,10 +123,11 @@ export const sessions: Session[] = [
     "description": "A deeply relaxing practice using props to prepare your body for a restful sleep.",
     "category": "Relax",
     "difficulty": "All-Levels",
-    "length": 8,
+    "length": 20,
     "tags": ["restorative", "props", "sleep-prep"],
     "instructor": "Noah Kim",
-    "thumbnail": "/lovable-uploads/79b5a332-dc59-480b-9a85-b247e1aafa54.png"
+    "thumbnail": "/lovable-uploads/79b5a332-dc59-480b-9a85-b247e1aafa54.png",
+    "releaseDate": "2025-08-03T00:00:00.000Z"
   },
   {
     "id": "45min-total-body-challenge",
@@ -126,10 +135,11 @@ export const sessions: Session[] = [
     "description": "Push your limits with this advanced, full-body workout for strength and endurance.",
     "category": "Strength",
     "difficulty": "Advanced",
-    "length": 7,
+    "length": 45,
     "tags": ["total-body", "power", "endurance"],
     "instructor": "Chloe Zhang",
-    "thumbnail": "/lovable-uploads/49a70081-4e66-4014-a2ec-90fbb6baa5da.png"
+    "thumbnail": "/lovable-uploads/49a70081-4e66-4014-a2ec-90fbb6baa5da.png",
+    "releaseDate": "2025-08-10T00:00:00.000Z"
   },
   {
     "id": "bedtime-breath-to-sleep",
@@ -137,10 +147,11 @@ export const sessions: Session[] = [
     "description": "Simple breathing exercises (Pranayama) to calm your nervous system for sleep.",
     "category": "Relax",
     "difficulty": "Beginner",
-    "length": 9,
+    "length": 10,
     "tags": ["pranayama", "sleep", "calm"],
     "instructor": "Ethan Johnson",
-    "thumbnail": "/lovable-uploads/5e8e80fa-8eff-4b16-a89f-53339e6993aa.png"
+    "thumbnail": "/lovable-uploads/5e8e80fa-8eff-4b16-a89f-53339e6993aa.png",
+    "releaseDate": "2025-08-17T00:00:00.000Z"
   }
 ];
 

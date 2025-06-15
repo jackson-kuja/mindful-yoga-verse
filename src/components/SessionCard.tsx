@@ -3,8 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Session } from "@/data/sessions";
-import { Clock, ArrowRight } from "lucide-react";
+import { Clock, ArrowRight, Lock } from "lucide-react";
 import { Button } from "./ui/button";
+import { isFuture, formatDistanceToNow } from 'date-fns';
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 interface SessionCardProps {
   session: Session;
@@ -12,19 +15,53 @@ interface SessionCardProps {
 
 const SessionCard = ({ session }: SessionCardProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const isLocked = session.releaseDate && isFuture(new Date(session.releaseDate));
+
+  const handleCardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (isLocked) {
+      e.preventDefault();
+      toast({
+        title: "Session Locked",
+        description: `This session will be available in ${formatDistanceToNow(new Date(session.releaseDate!))}.`,
+      });
+    }
+  };
 
   const handleStartPractice = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isLocked) {
+      toast({
+        title: "Session Locked",
+        description: `This session will be available in ${formatDistanceToNow(new Date(session.releaseDate!))}.`,
+      });
+      return;
+    }
     navigate(`/practice/${session.id}`);
   };
   
   return (
-    <Card className="h-full flex flex-col transition-shadow duration-300 group-hover:shadow-lg overflow-hidden">
-      <Link to={`/sessions/${session.id}`} className="block group flex-grow flex flex-col" aria-label={`View details for ${session.name}`}>
+    <Card className={cn(
+      "h-full flex flex-col transition-shadow duration-300 overflow-hidden",
+      isLocked ? "grayscale" : "group-hover:shadow-lg"
+    )}>
+      <Link
+        to={isLocked ? '#' : `/sessions/${session.id}`}
+        onClick={handleCardClick}
+        className="block group flex-grow flex flex-col"
+        aria-label={`View details for ${session.name}`}
+      >
         <div className="relative aspect-[3/2] bg-secondary">
-          {/* TODO: Replace with actual session thumbnail image */}
           <img src={session.thumbnail} alt={session.name} className="w-full h-full object-cover" />
+          {isLocked && (
+            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white p-4 text-center">
+              <Lock className="w-10 h-10 mb-2" />
+              <p className="font-semibold">Unlocks in</p>
+              <p>{formatDistanceToNow(new Date(session.releaseDate!))}</p>
+            </div>
+          )}
         </div>
         <CardHeader className="flex-grow">
           <CardTitle className="text-xl">{session.name}</CardTitle>
@@ -39,9 +76,15 @@ const SessionCard = ({ session }: SessionCardProps) => {
         </CardContent>
       </Link>
       <CardFooter className="p-4 border-t mt-auto">
-        <Button onClick={handleStartPractice} className="w-full" size="sm" aria-label={`Start ${session.name} practice`}>
-          Start Practice
-          <ArrowRight className="w-4 h-4" />
+        <Button
+          onClick={handleStartPractice}
+          className="w-full"
+          size="sm"
+          aria-label={isLocked ? `Session ${session.name} is locked` : `Start ${session.name} practice`}
+          disabled={isLocked}
+        >
+          {isLocked ? 'Locked' : 'Start Practice'}
+          {isLocked ? <Lock className="w-4 h-4 ml-2" /> : <ArrowRight className="w-4 h-4 ml-2" />}
         </Button>
       </CardFooter>
     </Card>

@@ -3,8 +3,9 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getSessionById } from '@/data/sessions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Clock, BarChart3, Star, User, Play } from "lucide-react";
+import { ArrowLeft, Clock, BarChart3, Star, User, Play, Lock } from "lucide-react";
 import NotFound from './NotFound';
+import { isFuture, formatDistanceToNow } from 'date-fns';
 
 const SessionDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,33 @@ const SessionDetail = () => {
 
   if (!session) {
     return <NotFound />;
+  }
+
+  const isLocked = session.releaseDate && isFuture(new Date(session.releaseDate));
+
+  if (isLocked) {
+    return (
+      <div className="container py-12">
+        <div className="mb-8">
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/sessions" className="flex items-center gap-2 text-muted-foreground">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Sessions
+            </Link>
+          </Button>
+        </div>
+        <div className="flex flex-col items-center justify-center text-center rounded-lg border bg-card text-card-foreground shadow-sm p-8" style={{ minHeight: '400px' }}>
+          <Lock className="w-20 h-20 text-primary mb-6" />
+          <h1 className="text-3xl font-bold mb-2">Session Locked</h1>
+          <p className="text-lg text-muted-foreground mb-4">
+            This session, "{session.name}", is not yet available.
+          </p>
+          <p className="text-xl font-semibold text-primary">
+            Unlocks in {formatDistanceToNow(new Date(session.releaseDate!))}
+          </p>
+        </div>
+      </div>
+    );
   }
   
   const handleStartPractice = () => {

@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -18,6 +19,7 @@ const formSchema = z.object({
 const SignUpForm = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -30,7 +32,7 @@ const SignUpForm = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     const redirectUrl = `${window.location.origin}/`;
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: values.email,
       password: values.password,
       options: {
@@ -44,6 +46,12 @@ const SignUpForm = () => {
         description: error.message,
         variant: "destructive",
       });
+    } else if (data.session) {
+      toast({
+        title: "Success!",
+        description: "You are now logged in.",
+      });
+      navigate("/");
     } else {
       toast({
         title: "Check your email",

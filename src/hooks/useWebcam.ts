@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 
 export const useWebcam = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [error, setError] = = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {

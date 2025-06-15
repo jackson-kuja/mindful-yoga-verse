@@ -1,1 +1,8 @@
+
 project_id = "rcqmlylbhdgouyfzfdtz"
+
+[edge_runtime]
+deno_version = 2
+
+[functions.live-yoga-coach]
+verify_jwt = false

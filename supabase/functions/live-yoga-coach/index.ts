@@ -34,31 +34,32 @@ Deno.serve(async (req) => {
     console.log("WebSocket upgrade successful");
     
     socket.onopen = () => {
-      console.log("WebSocket connection opened");
+      console.log("WebSocket connection opened - AI Coach ready!");
       try {
         socket.send(JSON.stringify({
           type: "connection",
           message: "AI Coach connected successfully!"
         }));
-        console.log("Welcome message sent");
+        console.log("Welcome message sent to client");
       } catch (err) {
         console.error("Error sending welcome message:", err);
       }
     };
     
     socket.onmessage = (event) => {
-      console.log("Received WebSocket message:", event.data);
+      console.log("Received WebSocket message:", typeof event.data, event.data instanceof ArrayBuffer ? `ArrayBuffer(${event.data.byteLength})` : event.data);
       try {
         if (event.data instanceof ArrayBuffer) {
-          console.log(`Received video frame of size: ${event.data.byteLength} bytes`);
-          // Echo back acknowledgment
+          console.log(`Processing video frame: ${event.data.byteLength} bytes`);
+          // Echo back acknowledgment for video frames
           socket.send(JSON.stringify({
             type: "frame_ack",
-            message: "Frame received and processed"
+            message: "Frame received and processed",
+            size: event.data.byteLength
           }));
         } else {
-          console.log("Received text message:", event.data);
-          // Echo back the message
+          console.log("Processing text message:", event.data);
+          // Echo back text messages
           socket.send(JSON.stringify({
             type: "echo",
             message: `Echo: ${event.data}`
@@ -70,7 +71,7 @@ Deno.serve(async (req) => {
     };
     
     socket.onclose = (event) => {
-      console.log(`WebSocket closed. Code: ${event.code}, Reason: ${event.reason}`);
+      console.log(`WebSocket closed. Code: ${event.code}, Reason: ${event.reason || 'No reason provided'}`);
     };
     
     socket.onerror = (error) => {

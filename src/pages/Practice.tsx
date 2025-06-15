@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getSessionById } from '@/data/sessions';
@@ -16,7 +15,7 @@ const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjcW1seWxiaGRnb3V5ZnpmZHR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwMDAzNjUsImV4cCI6MjA2NTU3NjM2NX0.N6_rzf9k21lrdhtrbl8b3xf59AY4ztEDwxAH3a45z6Y";
 
 const WS_URL =
-  `wss://rcqmlylbhdgouyfzfdtz.functions.supabase.co/live-yoga-coach?apikey=${SUPABASE_ANON_KEY}`;
+  `wss://rcqmlylbhdgouyfzfdtz.supabase.co/functions/v1/live-yoga-coach?apikey=${SUPABASE_ANON_KEY}`;
 
 const PracticePage = () => {
   const { id } = useParams<{ id: string }>();
@@ -42,6 +41,16 @@ const PracticePage = () => {
       console.log("WebSocket connection established successfully.");
       setAiStatus('Connected');
       setWs(socket);
+    };
+
+    socket.onmessage = (event) => {
+      console.log("Received WebSocket message:", event.data);
+      try {
+        const data = JSON.parse(event.data);
+        console.log("Parsed message:", data);
+      } catch (err) {
+        console.log("Non-JSON message received:", event.data);
+      }
     };
 
     socket.onclose = (event) => {

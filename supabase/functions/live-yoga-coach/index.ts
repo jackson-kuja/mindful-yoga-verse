@@ -7,26 +7,66 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log("=== Edge Function Called ===");
+  console.log("Method:", req.method);
+  console.log("URL:", req.url);
+  console.log("Headers:", Object.fromEntries(req.headers.entries()));
+
   try {
-    if (req.headers.get("upgrade")?.toLowerCase() !== "websocket") {
-      return new Response("request isn't a websocket upgrade", { status: 400 });
+    // Handle CORS preflight requests
+    if (req.method === 'OPTIONS') {
+      console.log("Handling CORS preflight request");
+      return new Response('ok', { headers: corsHeaders });
     }
 
-    console.log("WebSocket upgrade request received.");
+    // Check for WebSocket upgrade header
+    const upgrade = req.headers.get("upgrade");
+    console.log("Upgrade header:", upgrade);
+    
+    if (upgrade?.toLowerCase() !== "websocket") {
+      console.log("Not a WebSocket upgrade request");
+      return new Response("Expected WebSocket upgrade", { 
+        status: 400,
+        headers: corsHeaders
+      });
+    }
+
+    console.log("Attempting WebSocket upgrade...");
     const { socket, response } = Deno.upgradeWebSocket(req);
+    console.log("WebSocket upgrade successful");
     
     socket.onopen = () => {
-      console.log("WebSocket connection opened successfully.");
-      socket.send("Connection established!");
+      console.log("WebSocket connection opened");
+      try {
+        socket.send(JSON.stringify({
+          type: "connection",
+          message: "AI Coach connected successfully!"
+        }));
+      } catch (err) {
+        console.error("Error sending welcome message:", err);
+      }
     };
     
     socket.onmessage = (event) => {
-      if (event.data instanceof ArrayBuffer) {
-        console.log(`Received a frame of size: ${event.data.byteLength}`);
-        // Acknowledge frame receipt
-        socket.send("Frame received");
-      } else {
-        console.log("Received message:", event.data);
+      console.log("Received WebSocket message:", event.data);
+      try {
+        if (event.data instanceof ArrayBuffer) {
+          console.log(`Received video frame of size: ${event.data.byteLength} bytes`);
+          // Echo back acknowledgment
+          socket.send(JSON.stringify({
+            type: "frame_ack",
+            message: "Frame received and processed"
+          }));
+        } else {
+          console.log("Received text message:", event.data);
+          // Echo back the message
+          socket.send(JSON.stringify({
+            type: "echo",
+            message: `Echo: ${event.data}`
+          }));
+        }
+      } catch (err) {
+        console.error("Error processing message:", err);
       }
     };
     
@@ -38,13 +78,25 @@ serve(async (req) => {
       console.error("WebSocket error:", error);
     };
 
+    console.log("Returning WebSocket response");
     return response;
-  } catch (e) {
-    const errorMessage = e instanceof Error ? e.message : String(e);
-    console.error("Fatal error in serve handler:", errorMessage);
-    if (e instanceof Error && e.stack) {
-        console.error("Stack trace:", e.stack);
-    }
-    return new Response(`Internal Server Error: ${errorMessage}`, { status: 500 });
+    
+  } catch (error) {
+    console.error("=== FATAL ERROR ===");
+    console.error("Error type:", error.constructor.name);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    
+    return new Response(
+      JSON.stringify({ 
+        error: "Internal server error", 
+        details: error.message,
+        type: error.constructor.name
+      }), 
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
   }
 });

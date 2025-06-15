@@ -30,52 +30,82 @@ Deno.serve(async (req) => {
     }
 
     console.log("Attempting WebSocket upgrade...");
-    const { socket, response } = Deno.upgradeWebSocket(req);
+    const { socket: browserSocket, response } = Deno.upgradeWebSocket(req);
     console.log("WebSocket upgrade successful");
-    
-    socket.onopen = () => {
-      console.log("WebSocket connection opened - AI Coach ready!");
-      try {
-        socket.send(JSON.stringify({
-          type: "connection",
-          message: "AI Coach connected successfully!"
-        }));
-        console.log("Welcome message sent to client");
-      } catch (err) {
-        console.error("Error sending welcome message:", err);
-      }
-    };
-    
-    socket.onmessage = (event) => {
-      console.log("Received WebSocket message:", typeof event.data, event.data instanceof ArrayBuffer ? `ArrayBuffer(${event.data.byteLength})` : event.data);
-      try {
-        if (event.data instanceof ArrayBuffer) {
-          console.log(`Processing video frame: ${event.data.byteLength} bytes`);
-          // Echo back acknowledgment for video frames
-          socket.send(JSON.stringify({
-            type: "frame_ack",
-            message: "Frame received and processed",
-            size: event.data.byteLength
-          }));
-        } else {
-          console.log("Processing text message:", event.data);
-          // Echo back text messages
-          socket.send(JSON.stringify({
-            type: "echo",
-            message: `Echo: ${event.data}`
-          }));
+
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    const GEMINI_MODEL = Deno.env.get("GEMINI_MODEL") ?? "gemini-2.0-flash-live-preview-04-09";
+
+    if (!GEMINI_API_KEY) {
+      console.error("GEMINI_API_KEY env var not set");
+    }
+
+    const geminiUrl = `wss://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:streamGenerateContent?alt=proto&key=${GEMINI_API_KEY}`;
+    console.log("Connecting to Gemini at", geminiUrl);
+    const gemini = new WebSocket(geminiUrl);
+
+    gemini.binaryType = "arraybuffer";
+    browserSocket.binaryType = "arraybuffer";
+
+    gemini.onopen = () => {
+      console.log("Connected to Gemini. Sending setup message.");
+      const setup = {
+        model: GEMINI_MODEL,
+        generationConfig: {
+          responseModalities: ["AUDIO"],
+          speechConfig: { audioEncoding: "LINEAR16" }
         }
-      } catch (err) {
-        console.error("Error processing message:", err);
+      };
+      gemini.send(JSON.stringify(setup));
+      browserSocket.send(JSON.stringify({ type: "connection", message: "AI Coach connected" }));
+    };
+
+    gemini.onmessage = (e) => {
+      if (e.data instanceof ArrayBuffer) {
+        console.log(`Forwarding audio frame ${e.data.byteLength} bytes`);
+        browserSocket.send(e.data);
+      } else {
+        browserSocket.send(e.data);
       }
     };
-    
-    socket.onclose = (event) => {
-      console.log(`WebSocket closed. Code: ${event.code}, Reason: ${event.reason || 'No reason provided'}`);
+
+    gemini.onerror = (err) => {
+      console.error("Gemini socket error", err);
+      browserSocket.close(1011, "Gemini error");
     };
-    
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
+
+    gemini.onclose = (ev) => {
+      console.log("Gemini socket closed", ev.code, ev.reason);
+      browserSocket.close(ev.code, ev.reason);
+    };
+
+    browserSocket.onmessage = (event) => {
+      if (gemini.readyState === WebSocket.OPEN) {
+        gemini.send(event.data);
+      }
+    };
+
+    browserSocket.onerror = (err) => {
+      console.error("Browser socket error", err);
+      gemini.close(1011, "Browser error");
+    };
+
+    browserSocket.onclose = (ev) => {
+      console.log("Browser socket closed", ev.code, ev.reason);
+      gemini.close(ev.code, ev.reason);
+    };
+
+    const keepAlive = setInterval(() => {
+      if (browserSocket.readyState === WebSocket.OPEN) {
+        browserSocket.send(JSON.stringify({ type: "ping" }));
+      }
+      if (gemini.readyState === WebSocket.OPEN) {
+        gemini.send(JSON.stringify({ type: "ping" }));
+      }
+    }, 30000);
+
+    browserSocket.onclose = () => {
+      clearInterval(keepAlive);
     };
 
     console.log("Returning WebSocket response");

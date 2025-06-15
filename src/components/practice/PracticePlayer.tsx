@@ -55,19 +55,12 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
         };
     }, []);
 
+    // Pause audio automatically when the session ends
     useEffect(() => {
         if (isFinished) {
             audioRef.current?.pause();
-            return;
         }
-
-        if (isPlaying) {
-            // Browsers may block autoplay, so we catch potential errors
-            audioRef.current?.play().catch(e => console.error("Audio playback error:", e));
-        } else {
-            audioRef.current?.pause();
-        }
-    }, [isPlaying, isFinished]);
+    }, [isFinished]);
 
     useEffect(() => {
         if (!isPlaying || isFinished) {
@@ -123,12 +116,25 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const imageToDisplay = (isResting ? nextPose?.image : currentPose?.image) || '';
     const nameToDisplay = (isResting ? nextPose?.name : currentPose?.name) || '';
 
-    const handlePlayPause = () => setIsPlaying(!isPlaying);
+    const handlePlayPause = () => {
+        setIsPlaying(prev => {
+            const next = !prev;
+            if (audioRef.current) {
+                if (next) {
+                    audioRef.current.play().catch(e => console.error("Audio playback error:", e));
+                } else {
+                    audioRef.current.pause();
+                }
+            }
+            return next;
+        });
+    };
     const handleReset = () => {
         setElapsedTime(0);
         setIsPlaying(true);
         setShowResults(false);
         setResultsData(null);
+        audioRef.current?.play().catch(e => console.error("Audio playback error:", e));
     };
     const handleSkip = () => {
         if (!nextPose) return;
@@ -145,6 +151,7 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const handleFinish = () => {
         if (resultsData) return;
         setIsPlaying(false);
+        audioRef.current?.pause();
 
         let posesDone = 0;
         if (elapsedTime >= totalDuration && totalDuration > 0) {

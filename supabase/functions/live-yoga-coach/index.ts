@@ -1,12 +1,10 @@
 
-import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   console.log("=== Edge Function Called ===");
   console.log("Method:", req.method);
   console.log("URL:", req.url);
@@ -35,7 +33,7 @@ serve(async (req) => {
     const { socket, response } = Deno.upgradeWebSocket(req);
     console.log("WebSocket upgrade successful");
     
-    socket.addEventListener("open", () => {
+    socket.onopen = () => {
       console.log("WebSocket connection opened");
       try {
         socket.send(JSON.stringify({
@@ -46,9 +44,9 @@ serve(async (req) => {
       } catch (err) {
         console.error("Error sending welcome message:", err);
       }
-    });
+    };
     
-    socket.addEventListener("message", (event) => {
+    socket.onmessage = (event) => {
       console.log("Received WebSocket message:", event.data);
       try {
         if (event.data instanceof ArrayBuffer) {
@@ -69,15 +67,15 @@ serve(async (req) => {
       } catch (err) {
         console.error("Error processing message:", err);
       }
-    });
+    };
     
-    socket.addEventListener("close", (event) => {
+    socket.onclose = (event) => {
       console.log(`WebSocket closed. Code: ${event.code}, Reason: ${event.reason}`);
-    });
+    };
     
-    socket.addEventListener("error", (error) => {
+    socket.onerror = (error) => {
       console.error("WebSocket error:", error);
-    });
+    };
 
     console.log("Returning WebSocket response");
     return response;

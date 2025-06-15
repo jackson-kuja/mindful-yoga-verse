@@ -11,6 +11,19 @@ export function useLiveAudioPlayer(ws: WebSocket | null) {
     let isPlaying = false;
     console.log("useLiveAudioPlayer: AudioContext created.");
 
+    const resumeContext = () => {
+      if (ctx.state === "suspended") {
+        ctx.resume().catch((e) =>
+          console.error("useLiveAudioPlayer: AudioContext resume error:", e)
+        );
+      }
+      document.removeEventListener("click", resumeContext);
+    };
+
+    if (ctx.state === "suspended") {
+      document.addEventListener("click", resumeContext);
+    }
+
 
     ws.onmessage = async (e) => {
       console.log("useLiveAudioPlayer: Received WebSocket message.", e);

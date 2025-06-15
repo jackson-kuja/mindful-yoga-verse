@@ -117,17 +117,15 @@ const PracticePlayer = ({ session, onFinish }: PracticePlayerProps) => {
     const nameToDisplay = (isResting ? nextPose?.name : currentPose?.name) || '';
 
     const handlePlayPause = () => {
-        setIsPlaying(prev => {
-            const next = !prev;
-            if (audioRef.current) {
-                if (next) {
-                    audioRef.current.play().catch(e => console.error("Audio playback error:", e));
-                } else {
-                    audioRef.current.pause();
-                }
+        const next = !isPlaying;
+        setIsPlaying(next);
+        if (audioRef.current) {
+            if (next) {
+                audioRef.current.play().catch(e => console.error("Audio playback error:", e));
+            } else {
+                audioRef.current.pause();
             }
-            return next;
-        });
+        }
     };
     const handleReset = () => {
         setElapsedTime(0);

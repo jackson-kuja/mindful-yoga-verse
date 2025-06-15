@@ -35,19 +35,20 @@ serve(async (req) => {
     const { socket, response } = Deno.upgradeWebSocket(req);
     console.log("WebSocket upgrade successful");
     
-    socket.onopen = () => {
+    socket.addEventListener("open", () => {
       console.log("WebSocket connection opened");
       try {
         socket.send(JSON.stringify({
           type: "connection",
           message: "AI Coach connected successfully!"
         }));
+        console.log("Welcome message sent");
       } catch (err) {
         console.error("Error sending welcome message:", err);
       }
-    };
+    });
     
-    socket.onmessage = (event) => {
+    socket.addEventListener("message", (event) => {
       console.log("Received WebSocket message:", event.data);
       try {
         if (event.data instanceof ArrayBuffer) {
@@ -68,15 +69,15 @@ serve(async (req) => {
       } catch (err) {
         console.error("Error processing message:", err);
       }
-    };
+    });
     
-    socket.onclose = (event) => {
+    socket.addEventListener("close", (event) => {
       console.log(`WebSocket closed. Code: ${event.code}, Reason: ${event.reason}`);
-    };
+    });
     
-    socket.onerror = (error) => {
+    socket.addEventListener("error", (error) => {
       console.error("WebSocket error:", error);
-    };
+    });
 
     console.log("Returning WebSocket response");
     return response;

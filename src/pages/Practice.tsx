@@ -30,26 +30,30 @@ const PracticePage = () => {
   useEffect(() => {
     if (!isAiMode) return;
 
+    console.log("AI mode enabled. Attempting to connect WebSocket...");
     setAiStatus('Connecting...');
     const socket = new WebSocket(WS_URL);
     
     socket.onopen = () => {
+      console.log("WebSocket connection established successfully.");
       setAiStatus('Connected');
       setWs(socket);
     };
 
-    socket.onclose = () => {
+    socket.onclose = (event) => {
+      console.error(`WebSocket closed. Code: ${event.code}, Reason: ${event.reason}`);
       setAiStatus('Disconnected');
       setWs(null);
     };
 
     socket.onerror = (err) => {
-      console.error('WebSocket Error:', err);
+      console.error('A WebSocket error occurred:', err);
       setAiStatus('Error');
       setWs(null);
     };
 
     return () => {
+      console.log("Closing WebSocket connection due to component unmount or re-render.");
       socket.close();
     };
   }, [isAiMode]);

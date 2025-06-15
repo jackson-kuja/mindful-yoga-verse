@@ -7,7 +7,6 @@ import Index from "./pages/Index";
 import Sessions from "./pages/Sessions";
 import SessionDetail from "./pages/SessionDetail";
 import PracticePage from "./pages/Practice";
-import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import { AuthProvider } from "./providers/AuthProvider";
@@ -29,7 +28,6 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/sessions" element={<Sessions />} />
               <Route path="/sessions/:id" element={<SessionDetail />} />
-              <Route path="/about" element={<About />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

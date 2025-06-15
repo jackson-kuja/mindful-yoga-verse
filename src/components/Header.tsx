@@ -17,7 +17,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/sessions", label: "Sessions" },
-  { to: "/about", label: "About" },
 ];
 
 const Header = () => {

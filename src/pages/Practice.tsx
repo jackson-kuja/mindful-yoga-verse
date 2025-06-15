@@ -12,7 +12,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Wifi, WifiOff } from 'lucide-react';
 
-const WS_URL = "wss://rcqmlylbhdgouyfzfdtz.functions.supabase.co/live-yoga-coach";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjcW1seWxiaGRnb3V5ZnpmZHR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwMDAzNjUsImV4cCI6MjA2NTU3NjM2NX0.N6_rzf9k21lrdhtrbl8b3xf59AY4ztEDwxAH3a45z6Y";
+
+const WS_URL =
+  `wss://rcqmlylbhdgouyfzfdtz.functions.supabase.co/live-yoga-coach?apikey=${SUPABASE_ANON_KEY}`;
 
 const PracticePage = () => {
   const { id } = useParams<{ id: string }>();
